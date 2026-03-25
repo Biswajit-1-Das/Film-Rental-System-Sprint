@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+        This block identifies YOUR project.
+        groupId   = like a company/package namespace (reverse domain)
+        artifactId = the name of your app
+        version   = starts at 0.0.1-SNAPSHOT (SNAPSHOT means "in development")
+        packaging = JAR (not WAR — we run JSP from inside the JAR using Tomcat Jasper)
+    -->
+    <groupId>com.jobportal</groupId>
+    <artifactId>job-portal</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>Job Portal</name>
+
+    <!--
+        Spring Boot parent POM — this is the magic that gives us
+        pre-configured, compatible versions for ALL Spring libraries.
+        Without this, you'd have to manually match versions (painful).
+    -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+        <relativePath/>
+    </parent>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+    <dependencies>
+
+        <!--
+            SPRING BOOT WEB
+            Gives us: REST controllers, embedded Tomcat server, Jackson (JSON).
+            This is what lets you write @RestController and @GetMapping.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--
+            TOMCAT JASPER + JSTL
+            These two together are what allow JSP files to work inside a JAR.
+            Normally JSP needs a WAR file, but Jasper is the JSP engine
+            that Tomcat uses. We embed it here so it runs from a JAR.
+            JSTL gives us tags like <c:forEach> inside JSP files.
+            scope=provided means: include at compile time, Tomcat provides it at runtime.
+        -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.servlet.jsp.jstl</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.web</groupId>
+            <artifactId>jakarta.servlet.jsp.jstl</artifactId>
+        </dependency>
+
+        <!--
+            SPRING DATA JPA
+            JPA = Java Persistence API. This lets you talk to your MySQL database
+            using Java objects (called "entities") instead of raw SQL.
+            Spring Data adds magic: just write an interface like
+            EmployerRepository extends JpaRepository and you get
+            save(), findById(), findAll(), delete() for FREE.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!--
+            MYSQL CONNECTOR
+            The JDBC driver — the actual bridge between Java and MySQL.
+            runtime scope = only needed when the app is running, not compiling.
+        -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!--
+            SPRING SECURITY
+            Handles login, logout, who can access what.
+            We'll configure it to use HTTP Basic Auth (username + password
+            sent in the request header, simplest possible auth).
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!--
+            LOMBOK
+            A code-saving library. Instead of writing 50 lines of
+            getters, setters, constructors — you just add @Data on your class.
+            Lombok generates all of it at compile time.
+            optional=true means: only needed by developers, not by people
+            who use your library.
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--
+            SPRING BOOT TEST
+            Testing utilities (JUnit, Mockito). We'll use this later.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+                SPRING BOOT MAVEN PLUGIN
+                This lets you run: mvn spring-boot:run
+                It also packages everything into a single runnable JAR
+                (called a "fat JAR") with: mvn package
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- Tell Lombok not to be included in the final JAR -->
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
