@@ -47,5 +47,7 @@ public class StoreController {
     public String deleteStore(@PathVariable Integer id) {
         storesService.deleteStore(id);
         return "Store deleted successfully!";
+
+
     }
 }
