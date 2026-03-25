@@ -25,7 +25,7 @@ public class StaffService implements UserDetailsService {
             throws UsernameNotFoundException {
 
         Staff staff = staffRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(
+                .orElseThrow(() -> new RuntimeException(
                         "No staff account found for username: " + username));
 
         String role = isManager(staff) ? "ROLE_MANAGER" : "ROLE_STAFF";
