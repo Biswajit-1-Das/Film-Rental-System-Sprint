@@ -4,7 +4,6 @@ import com.logincontroller.filmrentalsystem.model.Address;
 import com.logincontroller.filmrentalsystem.model.City;
 import com.logincontroller.filmrentalsystem.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
