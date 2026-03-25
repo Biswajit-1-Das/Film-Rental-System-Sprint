@@ -1,10 +1,11 @@
 package com.logincontroller.filmrentalsystem.model;
 
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "actor")
@@ -25,5 +26,7 @@ public class Actor {
     @Column(name = "last_update")
     private Timestamp lastUpdate;
 
-    
+    @JsonIgnore
+    @ManyToMany(mappedBy = "actors")
+    private List<Film> films;
 }

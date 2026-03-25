@@ -1,8 +1,8 @@
 package com.logincontroller.filmrentalsystem.service;
 
-
 import com.logincontroller.filmrentalsystem.model.Film;
 import com.logincontroller.filmrentalsystem.repository.FilmRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -10,11 +10,8 @@ import java.util.List;
 @Service
 public class FilmService {
 
-    private final FilmRepository filmRepository;
-
-    public FilmService(FilmRepository filmRepository) {
-        this.filmRepository = filmRepository;
-    }
+    @Autowired
+    private FilmRepository filmRepository;
 
     public List<Film> getAllFilms() {
         return filmRepository.findAll();

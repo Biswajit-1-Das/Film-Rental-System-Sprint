@@ -1,8 +1,8 @@
 package com.logincontroller.filmrentalsystem.controller;
 
-
 import com.logincontroller.filmrentalsystem.model.Film;
 import com.logincontroller.filmrentalsystem.service.FilmService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,11 +11,8 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
 
-    private final FilmService filmService;
-
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
+    @Autowired
+    private FilmService filmService;
 
     @GetMapping
     public List<Film> getAllFilms() {
@@ -39,8 +36,7 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}")
-    public String deleteFilm(@PathVariable Short id) {
+    public void deleteFilm(@PathVariable Short id) {
         filmService.deleteFilm(id);
-        return "Film deleted successfully!";
     }
 }
