@@ -34,8 +34,8 @@ public class StoresService {
     public Stores updateStore(Integer id, Stores storeDetails) {
         Stores existingStore = getStoreById(id);
         
-        existingStore.setManagerStaffId(storeDetails.getManagerStaffId());
-        existingStore.setAddressId(storeDetails.getAddressId());
+        existingStore.setManagerStaff(storeDetails.getManagerStaff());
+        existingStore.setAddress(storeDetails.getAddress());
         existingStore.setLastUpdate(LocalDateTime.now());
         
         return storesRepository.save(existingStore);
@@ -44,11 +44,11 @@ public class StoresService {
     public Stores patchStore(Integer id, Stores storeUpdates) {
         Stores existingStore = getStoreById(id);
         
-        if (storeUpdates.getManagerStaffId() != null) {
-            existingStore.setManagerStaffId(storeUpdates.getManagerStaffId());
+        if (storeUpdates.getManagerStaff() != null) {
+            existingStore.setManagerStaff(storeUpdates.getManagerStaff());
         }
-        if (storeUpdates.getAddressId() != null) {
-            existingStore.setAddressId(storeUpdates.getAddressId());
+        if (storeUpdates.getAddress() != null) {
+            existingStore.setAddress(storeUpdates.getAddress());
         }
         
         existingStore.setLastUpdate(LocalDateTime.now());

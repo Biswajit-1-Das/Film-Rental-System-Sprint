@@ -1,16 +1,12 @@
 package com.logincontroller.filmrentalsystem.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import java.time.LocalDateTime;
 
-@Data
-@NoArgsConstructor // Required by JPA
-@AllArgsConstructor
 @Entity
 @Table(name = "store")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 public class Stores {
 
     @Id
@@ -18,12 +14,16 @@ public class Stores {
     @Column(name = "store_id")
     private Integer storeId;
 
-    @Column(name = "manager_staff_id")
-    private Integer managerStaffId;
+    // The manager of this store — references the Staff table
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "manager_staff_id", nullable = false)
+    private Staff managerStaff;
 
-    @Column(name = "address_id")
-    private Integer addressId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address address;
 
-    @Column(name = "last_update")
+    @Column(name = "last_update", nullable = false,
+            insertable = false, updatable = false)
     private LocalDateTime lastUpdate;
 }
