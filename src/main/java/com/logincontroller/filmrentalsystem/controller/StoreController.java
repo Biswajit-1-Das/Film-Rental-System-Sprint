@@ -3,7 +3,7 @@ package com.logincontroller.filmrentalsystem.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.logincontroller.filmrentalsystem.model.Stores;
+import com.logincontroller.filmrentalsystem.model.Store;
 import com.logincontroller.filmrentalsystem.service.StoresService;
 
 import java.util.List;
@@ -19,27 +19,27 @@ public class StoreController {
     }
 
     @GetMapping
-    public List<Stores> getAllStores() {
+    public List<Store> getAllStores() {
         return storesService.getAllStores();
     }
 
     @GetMapping("/{id}")
-    public Stores getStoreById(@PathVariable Integer id) {
+    public Store getStoreById(@PathVariable Integer id) {
         return storesService.getStoreById(id);
     }
 
     @PostMapping
-    public Stores createStore(@RequestBody Stores store) {
+    public Store createStore(@RequestBody Store store) {
         return storesService.createStore(store);
     }
 
     @PutMapping("/{id}")
-    public Stores updateStore(@PathVariable Integer id, @RequestBody Stores store) {
+    public Store updateStore(@PathVariable Integer id, @RequestBody Store store) {
         return storesService.updateStore(id, store);
     }
 
     @PatchMapping("/{id}")
-    public Stores patchStore(@PathVariable Integer id, @RequestBody Stores store) {
+    public Store patchStore(@PathVariable Integer id, @RequestBody Store store) {
         return storesService.patchStore(id, store);
     }
 

@@ -50,5 +50,5 @@ public class Staff {
     // The store this staff member works at
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
-    private Stores store;
+    private Store store;
 }

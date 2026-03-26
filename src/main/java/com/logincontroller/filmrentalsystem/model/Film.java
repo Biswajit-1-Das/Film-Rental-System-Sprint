@@ -47,17 +47,23 @@ public class Film {
     @Column(name = "last_update")
     private Timestamp lastUpdate;
 
-    @Column(name = "language_id")
-    private Byte languageId;
+    // Primary language of the film
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "language_id", nullable = false)
+    private Language language;
 
-    @Column(name = "original_language_id")
-    private Byte originalLanguageId;
+    // Original language (nullable — not all films have this)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "original_language_id", nullable = true)
+    private Language originalLanguage;
 
-    @ManyToMany
+    // Added cascade for save/update propagation
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "film_actor",
             joinColumns = @JoinColumn(name = "film_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
     private List<Actor> actors;
+
 }

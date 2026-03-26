@@ -7,10 +7,6 @@ import java.util.List;
 
 import com.logincontroller.filmrentalsystem.model.Rental;
 import com.logincontroller.filmrentalsystem.repository.RentalRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

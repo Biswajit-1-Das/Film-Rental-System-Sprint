@@ -1,16 +1,12 @@
 package com.logincontroller.filmrentalsystem.model;
 
 import java.time.LocalDateTime;
-
-
 import jakarta.persistence.*;
-        import lombok.*;
+import lombok.*;
 
-        import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "customer")
-
 @Data               // getters + setters + toString
 @NoArgsConstructor  // default constructor
 @AllArgsConstructor // full constructor
@@ -23,8 +19,9 @@ public class Customer {
     @Column(name = "customer_id")
     private int customerId;
 
-    @Column(name = "store_id")
-    private int storeId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id", nullable = false)
+    private Store store;
 
     @Column(name = "first_name")
     private String firstName;
@@ -34,8 +31,9 @@ public class Customer {
 
     private String email;
 
-    @Column(name = "address_id")
-    private int addressId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id", nullable = false)
+    private Address address;
 
     private int active;
 

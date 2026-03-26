@@ -8,14 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-
-
-
-import jakarta.persistence.*;
-        import lombok.*;
-
-        import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "rental")
 
@@ -34,9 +26,9 @@ public class Rental {
     @Column(name = "rental_date")
     private LocalDateTime rentalDate;
 
-    // ✅ FK as normal field (simple way)
-    @Column(name = "inventory_id")
-    private int inventoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "inventory_id", nullable = false)
+    private Inventory inventory;
 
     // ✅ RELATIONSHIP (IMPORTANT 🔥)
     @ManyToOne

@@ -2,7 +2,7 @@ package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.model.Film;
 import com.logincontroller.filmrentalsystem.model.Inventory;
-import com.logincontroller.filmrentalsystem.model.Stores;
+import com.logincontroller.filmrentalsystem.model.Store;
 import com.logincontroller.filmrentalsystem.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -119,7 +119,7 @@ public class InventoryService {
      * Create new inventory item
      */
     @Transactional
-    public Inventory createInventory(Film film, Stores store) {
+    public Inventory createInventory(Film film, Store store) {
         if (film == null || store == null) {
             throw new RuntimeException("Film and Store cannot be null");
         }

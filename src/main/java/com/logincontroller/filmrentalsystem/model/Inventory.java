@@ -30,7 +30,7 @@ public class Inventory {
     // Many-to-One: Many inventory items belong to one Store
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
-    private Stores store;
+    private Store store;
 
     @Column(name = "last_update", nullable = false,
             insertable = false, updatable = false)
