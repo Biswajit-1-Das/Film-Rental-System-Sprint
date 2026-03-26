@@ -5,7 +5,8 @@ import com.logincontroller.filmrentalsystem.model.Staff;
 import com.logincontroller.filmrentalsystem.repository.StaffRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +23,7 @@ public class StaffService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException {
+            throws RuntimeException {
 
         Staff staff = staffRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException(
