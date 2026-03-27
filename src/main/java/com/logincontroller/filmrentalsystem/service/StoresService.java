@@ -1,61 +1,76 @@
 package com.logincontroller.filmrentalsystem.service;
 
+import com.logincontroller.filmrentalsystem.model.*;
+import com.logincontroller.filmrentalsystem.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.logincontroller.filmrentalsystem.model.Store;
-import com.logincontroller.filmrentalsystem.repository.StoresRepository;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class StoresService {
 
-    private final StoresRepository storesRepository;
+    @Autowired
+    private StoresRepository storeRepository;
 
-    public StoresService(StoresRepository storesRepository) {
-        this.storesRepository = storesRepository;
+    @Autowired
+    private StaffRepository staffRepository;
+
+    @Autowired
+    private AddressRepository addressRepository;
+
+    // ✅ CREATE
+    public Store createStore(Integer managerStaffId, Integer addressId, Store store) {
+
+        Staff manager = staffRepository.findById(managerStaffId)
+                .orElseThrow(() -> new RuntimeException("Manager staff not found"));
+
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        store.setManagerStaff(manager);
+        store.setAddress(address);
+
+        return storeRepository.save(store);
     }
 
-    public List<Store> getAllStores() {
-        return storesRepository.findAll();
-    }
-
+    // ✅ GET BY ID
     public Store getStoreById(Integer id) {
-        return storesRepository.findById(id)
+        return storeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Store not found with id: " + id));
     }
 
-    public Store createStore(Store store) {
-        store.setLastUpdate(LocalDateTime.now());
-        return storesRepository.save(store);
+    // ✅ GET ALL
+    public List<Store> getAllStores() {
+        return storeRepository.findAll();
     }
 
-    public Store updateStore(Integer id, Store storeDetails) {
-        Store existingStore = getStoreById(id);
-        
-        existingStore.setManagerStaff(storeDetails.getManagerStaff());
-        existingStore.setAddress(storeDetails.getAddress());
-        existingStore.setLastUpdate(LocalDateTime.now());
-        
-        return storesRepository.save(existingStore);
+    // ✅ GET BY ADDRESS
+    public List<Store> getStoresByAddress(Integer addressId) {
+        return storeRepository.findByAddressAddressId(addressId);
     }
 
-    public Store patchStore(Integer id, Store storeUpdates) {
-        Store existingStore = getStoreById(id);
-        
-        if (storeUpdates.getManagerStaff() != null) {
-            existingStore.setManagerStaff(storeUpdates.getManagerStaff());
-        }
-        if (storeUpdates.getAddress() != null) {
-            existingStore.setAddress(storeUpdates.getAddress());
-        }
-        
-        existingStore.setLastUpdate(LocalDateTime.now());
-        return storesRepository.save(existingStore);
+    // ✅ GET BY MANAGER STAFF
+    public List<Store> getStoresByManager(Integer staffId) {
+        return storeRepository.findByManagerStaffStaffId(staffId);
     }
 
-    public void deleteStore(Integer id) {
-        storesRepository.deleteById(id);
+    // ✅ UPDATE
+    public Store updateStore(Integer id, Store updatedStore,
+                             Integer managerStaffId, Integer addressId) {
+
+        Store existing = storeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Store not found"));
+
+        Staff manager = staffRepository.findById(managerStaffId)
+                .orElseThrow(() -> new RuntimeException("Manager staff not found"));
+
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        existing.setManagerStaff(manager);
+        existing.setAddress(address);
+
+        return storeRepository.save(existing);
     }
 }
