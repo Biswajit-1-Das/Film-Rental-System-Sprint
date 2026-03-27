@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class DashboardController {
 
-    @GetMapping("/dashboard")
+    @GetMapping("/api/dashboard")
     public String dashboard(HttpSession session) {
 
         Staff staff = (Staff) session.getAttribute("user");

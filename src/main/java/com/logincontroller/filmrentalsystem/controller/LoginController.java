@@ -15,7 +15,7 @@ public class LoginController {
     @Autowired
     private StaffService staffService;   // ✅ inject here
 
-    @PostMapping("/login")
+    @PostMapping("/api/login")
     public String login(@RequestParam String username,
                         @RequestParam String password,
                         HttpSession session,
