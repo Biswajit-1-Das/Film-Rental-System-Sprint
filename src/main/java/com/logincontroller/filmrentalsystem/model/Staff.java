@@ -4,7 +4,7 @@ package com.logincontroller.filmrentalsystem.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
-
+import java.util.*;
 @Entity
 @Table(name = "staff")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
@@ -35,7 +35,6 @@ public class Staff {
     @Column(name = "username", nullable = false, length = 16)
     private String username;
 
-    // Password stored as BCrypt hash — never plain text
     @Column(name = "password", nullable = false, length = 40)
     private String password;
 
@@ -51,4 +50,5 @@ public class Staff {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;
+
 }
