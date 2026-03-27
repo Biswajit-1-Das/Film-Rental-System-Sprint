@@ -1,52 +1,61 @@
 package com.logincontroller.filmrentalsystem.controller;
 
 import com.logincontroller.filmrentalsystem.model.Address;
-import com.logincontroller.filmrentalsystem.model.City;
 import com.logincontroller.filmrentalsystem.service.AddressService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
-import java.util.*;
-import java.util.*;
 @RestController
-@RequestMapping("/api/address")
+@RequestMapping("/addresses")
+@RequiredArgsConstructor
 public class AddressController {
-    final private AddressService addressService;
-    public AddressController(AddressService addressService)
-    {
-        this.addressService=addressService;
+
+    private final AddressService addressService;
+
+    @GetMapping
+    public ResponseEntity<List<Address>> getAllAddresses() {
+        return ResponseEntity.ok(addressService.getAllAddresses());
     }
-    @GetMapping("/all")
-    public List<Address> getAllAddresses()
-    {
-        return addressService.getAllAddress();
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Address> getAddressById(@PathVariable Integer id) {
+        return ResponseEntity.ok(addressService.getAddressById(id));
     }
-    @GetMapping("/postal/{postalCode}")
-    public Address findAddressByPostalCode(@PathVariable String postalCode)
-    {
-        return addressService.findAddressByPostalCode(postalCode);
+
+    @GetMapping("/city/{cityId}")
+    public ResponseEntity<List<Address>> getAddressesByCity(@PathVariable Integer cityId) {
+        return ResponseEntity.ok(addressService.getAddressesByCity(cityId));
     }
-    @GetMapping("/district/{district}")
-    public Address findByDistrict(@PathVariable String district)
-    {
-        return addressService.findByDistrict(district);
+
+    @GetMapping("/search")
+    public ResponseEntity<List<Address>> searchByDistrict(@RequestParam String district) {
+        return ResponseEntity.ok(addressService.searchByDistrict(district));
     }
-    @GetMapping("/address_id/{address_id}")
-    public Address findAddressByID(@PathVariable int address_id)
-    {
-        return addressService.findAddressByID(address_id);
+
+    @PostMapping
+    public ResponseEntity<Address> createAddress(@RequestBody Address address) {
+        return ResponseEntity.ok(addressService.saveAddress(address));
     }
-    @GetMapping("/Phone/{Phone}")
-    public Address findByPhone(String phone)
-    {
-        return addressService.findByPhone(phone);
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Address> updateAddress(@PathVariable Integer id,
+                                                 @RequestBody Address address) {
+        Address existing = addressService.getAddressById(id);
+        existing.setAddress(address.getAddress());
+        existing.setAddress2(address.getAddress2());
+        existing.setDistrict(address.getDistrict());
+        existing.setPostalCode(address.getPostalCode());
+        existing.setPhone(address.getPhone());
+        existing.setCity(address.getCity());
+        existing.setLocation(address.getLocation());
+        return ResponseEntity.ok(addressService.saveAddress(existing));
     }
-    @GetMapping("/city/{city}")
-    public Address findByCity(City city)
-    {
-        return addressService.findByCity(city);
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteAddress(@PathVariable Integer id) {
+        addressService.deleteAddress(id);
+        return ResponseEntity.ok("Address deleted successfully");
     }
 }
-

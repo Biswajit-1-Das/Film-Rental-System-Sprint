@@ -2,18 +2,15 @@ package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.model.Category;
 import com.logincontroller.filmrentalsystem.repository.CategoryRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-
-    public CategoryService(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
 
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
@@ -24,25 +21,13 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
     }
 
-    public Category createCategory(Category category) {
-        category.setLastUpdate(LocalDateTime.now());
+    public Category getCategoryByName(String name) {
+        return categoryRepository.findByNameIgnoreCase(name)
+                .orElseThrow(() -> new RuntimeException("Category not found: " + name));
+    }
+
+    public Category saveCategory(Category category) {
         return categoryRepository.save(category);
-    }
-
-    public Category updateCategory(Integer id, Category categoryDetails) {
-        Category existingCategory = getCategoryById(id);
-        existingCategory.setName(categoryDetails.getName());
-        existingCategory.setLastUpdate(LocalDateTime.now());
-        return categoryRepository.save(existingCategory);
-    }
-
-    public Category patchCategory(Integer id, Category categoryUpdates) {
-        Category existingCategory = getCategoryById(id);
-        if (categoryUpdates.getName() != null) {
-            existingCategory.setName(categoryUpdates.getName());
-        }
-        existingCategory.setLastUpdate(LocalDateTime.now());
-        return categoryRepository.save(existingCategory);
     }
 
     public void deleteCategory(Integer id) {

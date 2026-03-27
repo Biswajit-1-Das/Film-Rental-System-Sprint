@@ -2,47 +2,49 @@ package com.logincontroller.filmrentalsystem.controller;
 
 import com.logincontroller.filmrentalsystem.model.Category;
 import com.logincontroller.filmrentalsystem.service.CategoryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/categories")
+@RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
     @GetMapping
-    public List<Category> getAllCategories() {
-        return categoryService.getAllCategories();
+    public ResponseEntity<List<Category>> getAllCategories() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
     @GetMapping("/{id}")
-    public Category getCategoryById(@PathVariable Integer id) {
-        return categoryService.getCategoryById(id);
+    public ResponseEntity<Category> getCategoryById(@PathVariable Integer id) {
+        return ResponseEntity.ok(categoryService.getCategoryById(id));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<Category> getCategoryByName(@RequestParam String name) {
+        return ResponseEntity.ok(categoryService.getCategoryByName(name));
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+        return ResponseEntity.ok(categoryService.saveCategory(category));
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Integer id, @RequestBody Category category) {
-        return categoryService.updateCategory(id, category);
-    }
-
-    @PatchMapping("/{id}")
-    public Category patchCategory(@PathVariable Integer id, @RequestBody Category category) {
-        return categoryService.patchCategory(id, category);
+    public ResponseEntity<Category> updateCategory(@PathVariable Integer id,
+                                                   @RequestBody Category category) {
+        Category existing = categoryService.getCategoryById(id);
+        existing.setName(category.getName());
+        return ResponseEntity.ok(categoryService.saveCategory(existing));
     }
 
     @DeleteMapping("/{id}")
-    public String deleteCategory(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
-        return "Category deleted successfully!";
+        return ResponseEntity.ok("Category deleted successfully");
     }
 }
