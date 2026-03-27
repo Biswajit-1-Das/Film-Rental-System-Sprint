@@ -1,6 +1,8 @@
 package com.logincontroller.filmrentalsystem.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore; // ADD THIS IMPORT
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -10,6 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "language")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Getter
 @Setter
 @NoArgsConstructor
