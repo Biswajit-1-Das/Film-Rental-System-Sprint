@@ -1,16 +1,10 @@
 package com.logincontroller.filmrentalsystem.controller;
 
 import com.logincontroller.filmrentalsystem.model.Film;
-import com.logincontroller.filmrentalsystem.model.Staff;
 import com.logincontroller.filmrentalsystem.service.FilmService;
-<<<<<<< Updated upstream
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
-=======
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
->>>>>>> Stashed changes
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -58,17 +52,5 @@ public class FilmController {
     public ResponseEntity<Void> deleteFilm(@PathVariable Short id) {
         filmService.deleteFilm(id);
         return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/films")
-    public String films(HttpSession session) {
-
-        Staff staff = (Staff) session.getAttribute("user");
-
-        if (staff == null) {
-            return "redirect:/login";
-        }
-
-        return "films";
     }
 }
