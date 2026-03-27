@@ -29,6 +29,13 @@ public class ActorService {
         return actorRepository.findByLastNameContainingIgnoreCase(lastName);
     }
 
+    public Actor updateActor(Short id, Actor updatedData) {
+        Actor existing = getActorById(id);
+        existing.setFirstName(updatedData.getFirstName());
+        existing.setLastName(updatedData.getLastName());
+        return actorRepository.save(existing);
+    }
+
     public Actor saveActor(Actor actor) {
         return actorRepository.save(actor);
     }

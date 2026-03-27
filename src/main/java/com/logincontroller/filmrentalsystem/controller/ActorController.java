@@ -24,13 +24,13 @@ public class ActorController {
         return ResponseEntity.ok(actorService.getActorById(id));
     }
 
-    // search by first name — /actors/search?firstName=john
+    // search by first name — /api/actors/search?firstName=john
     @GetMapping("/search/firstname")
     public ResponseEntity<List<Actor>> searchByFirstName(@RequestParam String firstName) {
         return ResponseEntity.ok(actorService.searchByFirstName(firstName));
     }
 
-    // search by last name — /actors/search?lastName=smith
+    // search by last name — /api/actors/search?lastName=smith
     @GetMapping("/search/lastname")
     public ResponseEntity<List<Actor>> searchByLastName(@RequestParam String lastName) {
         return ResponseEntity.ok(actorService.searchByLastName(lastName));
@@ -44,10 +44,7 @@ public class ActorController {
     @PutMapping("/{id}")
     public ResponseEntity<Actor> updateActor(@PathVariable Short id,
                                              @RequestBody Actor actor) {
-        Actor existing = actorService.getActorById(id);
-        existing.setFirstName(actor.getFirstName());
-        existing.setLastName(actor.getLastName());
-        return ResponseEntity.ok(actorService.saveActor(existing));
+        return ResponseEntity.ok(actorService.updateActor(id, actor));
     }
 
     @DeleteMapping("/{id}")
