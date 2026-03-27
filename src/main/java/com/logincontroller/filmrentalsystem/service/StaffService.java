@@ -1,124 +1,89 @@
 package com.logincontroller.filmrentalsystem.service;
 
-
-import com.logincontroller.filmrentalsystem.model.Staff;
-import com.logincontroller.filmrentalsystem.repository.StaffRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import com.logincontroller.filmrentalsystem.model.*;
+import com.logincontroller.filmrentalsystem.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
+
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class StaffService implements UserDetailsService {
+public class StaffService {
 
-    private final StaffRepository staffRepository;
-    private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private StaffRepository staffRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username)
-            throws RuntimeException {
+    @Autowired
+    private AddressRepository addressRepository;
 
-        Staff staff = staffRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException(
-                        "No staff account found for username: " + username));
+    @Autowired
+    private StoresRepository storeRepository;
 
-        String role = isManager(staff) ? "ROLE_MANAGER" : "ROLE_STAFF";
+    // ✅ CREATE
+    public Staff createStaff(Integer addressId, Integer storeId, Staff staff) {
 
-        return new org.springframework.security.core.userdetails.User(
-                staff.getUsername(),
-                staff.getPassword(),
-                List.of(new SimpleGrantedAuthority(role))
-        );
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new RuntimeException("Store not found"));
+
+        staff.setAddress(address);
+        staff.setStore(store);
+
+        return staffRepository.save(staff);
     }
 
-    private boolean isManager(Staff staff) {
-        return staff.getStore() != null
-                && staff.getStore().getManagerStaff() != null
-                && staff.getStore().getManagerStaff().getStaffId()
-                .equals(staff.getStaffId());
+    // ✅ GET BY ID
+    public Staff getStaffById(Integer id) {
+        return staffRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Staff not found with id: " + id));
     }
 
+    // ✅ GET ALL
     public List<Staff> getAllStaff() {
         return staffRepository.findAll();
     }
 
-    public List<Staff> getActiveStaff() {
-        return staffRepository.findByActiveTrue();
+    // ✅ GET BY ADDRESS
+    public List<Staff> getStaffByAddress(Integer addressId) {
+        return staffRepository.findByAddressAddressId(addressId);
     }
 
+    // ✅ GET BY STORE
     public List<Staff> getStaffByStore(Integer storeId) {
         return staffRepository.findByStoreStoreId(storeId);
     }
 
-    public Staff getStaffById(Integer id) {
-        return staffRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
-                        "Staff not found with id: " + id));
+    // ✅ GET BY USERNAME
+    public Staff getByUsername(String username) {
+        return staffRepository.findByUsername(username);
     }
 
-    @Transactional
-    public Staff createStaff(Staff staff) {
-        staff.setPassword(passwordEncoder.encode(staff.getPassword()));
-        staff.setActive(true);
-        return staffRepository.save(staff);
-    }
+    // ✅ UPDATE
+    public Staff updateStaff(Integer id, Staff updatedStaff,
+                             Integer addressId, Integer storeId) {
 
-    @Transactional
-    public Staff updateStaff(Integer id, Staff updatedData) {
-        Staff existing = getStaffById(id);
-        existing.setFirstName(updatedData.getFirstName());
-        existing.setLastName(updatedData.getLastName());
-        existing.setEmail(updatedData.getEmail());
-        existing.setAddress(updatedData.getAddress());
-        existing.setStore(updatedData.getStore());
+        Staff existing = staffRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Staff not found"));
+
+        Address address = addressRepository.findById(addressId)
+                .orElseThrow(() -> new RuntimeException("Address not found"));
+
+        Store store = storeRepository.findById(storeId)
+                .orElseThrow(() -> new RuntimeException("Store not found"));
+
+        existing.setFirstName(updatedStaff.getFirstName());
+        existing.setLastName(updatedStaff.getLastName());
+        existing.setEmail(updatedStaff.getEmail());
+        existing.setActive(updatedStaff.getActive());
+        existing.setUsername(updatedStaff.getUsername());
+        existing.setPassword(updatedStaff.getPassword());
+        existing.setPicture(updatedStaff.getPicture());
+
+        existing.setAddress(address);
+        existing.setStore(store);
+
         return staffRepository.save(existing);
-    }
-
-    @Transactional
-    public void changePassword(Integer id, String rawNewPassword) {
-        Staff staff = getStaffById(id);
-        staff.setPassword(passwordEncoder.encode(rawNewPassword));
-        staffRepository.save(staff);
-    }
-
-    @Transactional
-    public void uploadPicture(Integer id, MultipartFile file) throws IOException {
-        Staff staff = getStaffById(id);
-        staff.setPicture(file.getBytes());
-        staffRepository.save(staff);
-    }
-
-    public byte[] getPicture(Integer id) {
-        Staff staff = getStaffById(id);
-        if (staff.getPicture() == null) {
-            throw new RuntimeException(
-                    "No picture on file for staff id: " + id);
-        }
-        return staff.getPicture();
-    }
-
-    @Transactional
-    public void deactivateStaff(Integer id) {
-        Staff staff = getStaffById(id);
-        staff.setActive(false);
-        staffRepository.save(staff);
-    }
-
-    @Transactional
-    public void activateStaff(Integer id) {
-        Staff staff = getStaffById(id);
-        staff.setActive(true);
-        staffRepository.save(staff);
-    }
-
-    public List<Object[]> getStaffListView() {
-        return staffRepository.getStaffListView();
     }
 }
