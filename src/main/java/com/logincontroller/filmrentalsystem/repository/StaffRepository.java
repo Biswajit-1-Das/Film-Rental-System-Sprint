@@ -2,7 +2,7 @@ package com.logincontroller.filmrentalsystem.repository;
 
 
 import com.logincontroller.filmrentalsystem.model.Staff;
-import com.logincontroller.filmrentalsystem.model.Stores;
+import com.logincontroller.filmrentalsystem.model.Store;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -16,7 +16,7 @@ public interface StaffRepository extends JpaRepository<Staff, Integer> {
     Optional<Staff> findByUsername(String username);
 
     // All staff at a given store
-    List<Staff> findByStore(Stores store);
+    List<Staff> findByStore(Store store);
 
     // Only currently employed staff
     List<Staff> findByActiveTrue();

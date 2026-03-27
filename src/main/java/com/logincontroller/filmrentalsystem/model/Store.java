@@ -3,11 +3,17 @@ package com.logincontroller.filmrentalsystem.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "store")
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Stores {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Store {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,4 +32,8 @@ public class Stores {
     @Column(name = "last_update", nullable = false,
             insertable = false, updatable = false)
     private LocalDateTime lastUpdate;
+
+    // Inverse side of Customer ↔ Store
+    @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Customer> customers = new ArrayList<>();
 }
