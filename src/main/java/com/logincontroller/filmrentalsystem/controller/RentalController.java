@@ -1,43 +1,67 @@
 package com.logincontroller.filmrentalsystem.controller;
 
-import lombok.RequiredArgsConstructor;
+import com.logincontroller.filmrentalsystem.model.Rental;
+import com.logincontroller.filmrentalsystem.service.RentalService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import com.logincontroller.filmrentalsystem.model.Rental;
-import com.logincontroller.filmrentalsystem.service.RentalService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
-
-        import java.util.List;
-
 @RestController
-@RequestMapping("/rentals")
-@RequiredArgsConstructor
-
+@RequestMapping("/api/rentals")
 public class RentalController {
 
-    private final RentalService rentalService;
+    @Autowired
+    private RentalService rentalService;
 
+    // ✅ CREATE
     @PostMapping
-    public Rental create(@RequestBody Rental rental) {
-        return rentalService.save(rental);
+    public Rental createRental(@RequestParam Integer customerId,
+                               @RequestParam Integer staffId,
+                               @RequestParam Integer inventoryId,
+                               @RequestBody Rental rental) {
+
+        return rentalService.createRental(customerId, staffId, inventoryId, rental);
     }
 
-    @GetMapping
-    public List<Rental> getAll() {
-        return rentalService.getAll();
-    }
-
+    // ✅ GET BY ID
     @GetMapping("/{id}")
-    public Rental getById(@PathVariable int id) {
-        return rentalService.getById(id);
+    public Rental getRentalById(@PathVariable Integer id) {
+        return rentalService.getRentalById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable int id) {
-        rentalService.delete(id);
-        return "Rental deleted successfully";
+    // ✅ GET ALL
+    @GetMapping
+    public List<Rental> getAllRentals() {
+        return rentalService.getAllRentals();
+    }
+
+    // ✅ GET BY CUSTOMER
+    @GetMapping("/customer/{customerId}")
+    public List<Rental> getByCustomer(@PathVariable Integer customerId) {
+        return rentalService.getRentalsByCustomer(customerId);
+    }
+
+    // ✅ GET BY STAFF
+    @GetMapping("/staff/{staffId}")
+    public List<Rental> getByStaff(@PathVariable Integer staffId) {
+        return rentalService.getRentalsByStaff(staffId);
+    }
+
+    // ✅ GET BY INVENTORY
+    @GetMapping("/inventory/{inventoryId}")
+    public List<Rental> getByInventory(@PathVariable Integer inventoryId) {
+        return rentalService.getRentalsByInventory(inventoryId);
+    }
+
+    // ✅ UPDATE
+    @PutMapping("/{id}")
+    public Rental updateRental(@PathVariable Integer id,
+                               @RequestParam Integer customerId,
+                               @RequestParam Integer staffId,
+                               @RequestParam Integer inventoryId,
+                               @RequestBody Rental rental) {
+
+        return rentalService.updateRental(id, rental, customerId, staffId, inventoryId);
     }
 }

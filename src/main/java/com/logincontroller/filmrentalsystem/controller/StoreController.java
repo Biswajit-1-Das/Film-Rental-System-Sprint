@@ -1,10 +1,9 @@
 package com.logincontroller.filmrentalsystem.controller;
 
-
-import org.springframework.web.bind.annotation.*;
-
 import com.logincontroller.filmrentalsystem.model.Store;
 import com.logincontroller.filmrentalsystem.service.StoresService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -12,42 +11,49 @@ import java.util.List;
 @RequestMapping("/api/stores")
 public class StoreController {
 
-    private StoresService storesService;
+    @Autowired
+    private StoresService storeService;
 
-    public StoreController(StoresService storesService) {
-        this.storesService = storesService;
+    // ✅ CREATE
+    @PostMapping
+    public Store createStore(@RequestParam Integer managerStaffId,
+                             @RequestParam Integer addressId,
+                             @RequestBody Store store) {
+
+        return storeService.createStore(managerStaffId, addressId, store);
     }
 
-    @GetMapping
-    public List<Store> getAllStores() {
-        return storesService.getAllStores();
-    }
-
+    // ✅ GET BY ID
     @GetMapping("/{id}")
     public Store getStoreById(@PathVariable Integer id) {
-        return storesService.getStoreById(id);
+        return storeService.getStoreById(id);
     }
 
-    @PostMapping
-    public Store createStore(@RequestBody Store store) {
-        return storesService.createStore(store);
+    // ✅ GET ALL
+    @GetMapping
+    public List<Store> getAllStores() {
+        return storeService.getAllStores();
     }
 
+    // ✅ GET BY ADDRESS
+    @GetMapping("/address/{addressId}")
+    public List<Store> getByAddress(@PathVariable Integer addressId) {
+        return storeService.getStoresByAddress(addressId);
+    }
+
+    // ✅ GET BY MANAGER
+    @GetMapping("/manager/{staffId}")
+    public List<Store> getByManager(@PathVariable Integer staffId) {
+        return storeService.getStoresByManager(staffId);
+    }
+
+    // ✅ UPDATE
     @PutMapping("/{id}")
-    public Store updateStore(@PathVariable Integer id, @RequestBody Store store) {
-        return storesService.updateStore(id, store);
-    }
+    public Store updateStore(@PathVariable Integer id,
+                             @RequestParam Integer managerStaffId,
+                             @RequestParam Integer addressId,
+                             @RequestBody Store store) {
 
-    @PatchMapping("/{id}")
-    public Store patchStore(@PathVariable Integer id, @RequestBody Store store) {
-        return storesService.patchStore(id, store);
-    }
-
-    @DeleteMapping("/{id}")
-    public String deleteStore(@PathVariable Integer id) {
-        storesService.deleteStore(id);
-        return "Store deleted successfully!";
-
-
+        return storeService.updateStore(id, store, managerStaffId, addressId);
     }
 }
