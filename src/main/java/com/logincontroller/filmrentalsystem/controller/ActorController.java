@@ -2,41 +2,57 @@ package com.logincontroller.filmrentalsystem.controller;
 
 import com.logincontroller.filmrentalsystem.model.Actor;
 import com.logincontroller.filmrentalsystem.service.ActorService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/actors")
+@RequiredArgsConstructor
 public class ActorController {
 
-    @Autowired
-    private ActorService actorService;
+    private final ActorService actorService;
 
     @GetMapping
-    public List<Actor> getAllActors() {
-        return actorService.getAllActors();
+    public ResponseEntity<List<Actor>> getAllActors() {
+        return ResponseEntity.ok(actorService.getAllActors());
     }
 
     @GetMapping("/{id}")
-    public Actor getActorById(@PathVariable Short id) {
-        return actorService.getActorById(id);
+    public ResponseEntity<Actor> getActorById(@PathVariable Short id) {
+        return ResponseEntity.ok(actorService.getActorById(id));
+    }
+
+    // search by first name — /actors/search?firstName=john
+    @GetMapping("/search/firstname")
+    public ResponseEntity<List<Actor>> searchByFirstName(@RequestParam String firstName) {
+        return ResponseEntity.ok(actorService.searchByFirstName(firstName));
+    }
+
+    // search by last name — /actors/search?lastName=smith
+    @GetMapping("/search/lastname")
+    public ResponseEntity<List<Actor>> searchByLastName(@RequestParam String lastName) {
+        return ResponseEntity.ok(actorService.searchByLastName(lastName));
     }
 
     @PostMapping
-    public Actor createActor(@RequestBody Actor actor) {
-        return actorService.saveActor(actor);
+    public ResponseEntity<Actor> createActor(@RequestBody Actor actor) {
+        return ResponseEntity.ok(actorService.saveActor(actor));
     }
 
     @PutMapping("/{id}")
-    public Actor updateActor(@PathVariable Short id, @RequestBody Actor actor) {
-        actor.setActorId(id);
-        return actorService.saveActor(actor);
+    public ResponseEntity<Actor> updateActor(@PathVariable Short id,
+                                             @RequestBody Actor actor) {
+        Actor existing = actorService.getActorById(id);
+        existing.setFirstName(actor.getFirstName());
+        existing.setLastName(actor.getLastName());
+        return ResponseEntity.ok(actorService.saveActor(existing));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteActor(@PathVariable Short id) {
+    public ResponseEntity<String> deleteActor(@PathVariable Short id) {
         actorService.deleteActor(id);
+        return ResponseEntity.ok("Actor deleted successfully");
     }
 }
