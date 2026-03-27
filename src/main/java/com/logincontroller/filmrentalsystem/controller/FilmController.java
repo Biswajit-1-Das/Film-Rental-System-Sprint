@@ -1,7 +1,9 @@
 package com.logincontroller.filmrentalsystem.controller;
 
 import com.logincontroller.filmrentalsystem.model.Film;
+import com.logincontroller.filmrentalsystem.model.Staff;
 import com.logincontroller.filmrentalsystem.service.FilmService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,5 +40,17 @@ public class FilmController {
     @DeleteMapping("/{id}")
     public void deleteFilm(@PathVariable Short id) {
         filmService.deleteFilm(id);
+    }
+
+    @GetMapping("/films")
+    public String films(HttpSession session) {
+
+        Staff staff = (Staff) session.getAttribute("user");
+
+        if (staff == null) {
+            return "redirect:/login";
+        }
+
+        return "films";
     }
 }

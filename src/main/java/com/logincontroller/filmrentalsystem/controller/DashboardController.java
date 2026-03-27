@@ -1,0 +1,28 @@
+package com.logincontroller.filmrentalsystem.controller;
+
+import com.logincontroller.filmrentalsystem.model.Staff;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class DashboardController {
+
+    @GetMapping("/dashboard")
+    public String dashboard(HttpSession session) {
+
+        Staff staff = (Staff) session.getAttribute("user");
+
+        // ✅ Not logged in
+        if (staff == null) {
+            return "redirect:/login";
+        }
+
+        // ✅ Not admin → block
+        if (!staff.getUsername().equals("admin")) {
+            return "redirect:/home";
+        }
+
+        return "dashboard";
+    }
+}
