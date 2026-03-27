@@ -19,15 +19,7 @@ public class Payments {
     @Column(name = "payment_id")
     private Integer paymentId;
 
-    // Kept as Integer to prevent "Unknown Entity" crashes until you build the Customer entity
-    @Column(name = "customer_id")
-    private Integer customerId;
 
-    // Kept as Integer to prevent crashes until you build the Staff entity
-    @Column(name = "staff_id")
-    private Integer staffId;
-
-    // Kept as Integer to prevent crashes until you build the Rental entity
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "rental_id")
     private Rental rental;
