@@ -55,4 +55,8 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore // Crucial to prevent infinite loops!
     private List<Payments> payments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore // Crucial to prevent infinite loops!
+    private List<Rental> rental  = new ArrayList<>();
 }

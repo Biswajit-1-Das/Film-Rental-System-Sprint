@@ -30,4 +30,6 @@ public class Inventory {
 
     @Column(name = "last_update", nullable = false, insertable = false, updatable = false)
     private LocalDateTime lastUpdate;
+
+
 }

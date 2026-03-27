@@ -28,8 +28,9 @@ public class Payments {
     private Integer staffId;
 
     // Kept as Integer to prevent crashes until you build the Rental entity
-    @Column(name = "rental_id")
-    private Integer rentalId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rental_id")
+    private Rental rental;
 
     @Column(name = "amount", precision = 5, scale = 2)
     private BigDecimal amount;
@@ -39,4 +40,14 @@ public class Payments {
 
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="customer_id")
+    private Customer customer;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="staff_id")
+    private Staff staff;
+
+
 }
