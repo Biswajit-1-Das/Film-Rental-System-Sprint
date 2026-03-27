@@ -1,10 +1,12 @@
 package com.logincontroller.filmrentalsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -66,4 +68,9 @@ public class Film {
     )
     private List<Actor> actors;
 
+    // NEW: Inverse side of Inventory ↔ Film
+    // @JsonIgnore prevents Postman from crashing when fetching a Film
+    @OneToMany(mappedBy = "film", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Inventory> inventories = new ArrayList<>();
 }
