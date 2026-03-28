@@ -1,0 +1,76 @@
+package com.frontend.util;
+
+import com.frontend.dto.*;
+import java.util.List;
+
+public class DataProvider {
+
+    public static List<MemberDTO> getMembers() {
+
+        return List.of(
+
+            new MemberDTO(
+                "Biswajit Das", "🎬", "Film & Cast Module",
+                List.of("Film", "Actor", "Film_Actor", "Film_Text"),
+                List.of(
+                    new EntityDTO("Film", List.of(
+                        new EndpointDTO("GET", "/api/films", "Get all films")
+                    )),
+                    new EntityDTO("Actor", List.of(
+                        new EndpointDTO("GET", "/api/actors", "Get all actors")
+                    ))
+                )
+            ),
+
+            new MemberDTO(
+                "Debapriya Das", "🏷️", "Category & Language Module",
+                List.of("Category", "Film_Category", "Language"),
+                List.of(
+                    new EntityDTO("Category", List.of(
+                        new EndpointDTO("GET", "/api/categories", "Get categories")
+                    ))
+                )
+            ),
+
+            new MemberDTO(
+                "Rajarshi", "🗺️", "Geography Module",
+                List.of("Country", "City", "Address"),
+                List.of(
+                    new EntityDTO("Country", List.of(
+                        new EndpointDTO("GET", "/api/countries", "Get countries")
+                    ))
+                )
+            ),
+
+            new MemberDTO(
+                "Harsh Kumar", "🏪", "Store & Inventory Module",
+                List.of("Store", "Staff", "Inventory"),
+                List.of(
+                    new EntityDTO("Store", List.of(
+                        new EndpointDTO("GET", "/api/stores", "Get stores")
+                    ))
+                )
+            ),
+
+            new MemberDTO(
+                "Divyansh Poddar", "👤", "Customer & Rental Module",
+                List.of("Customer", "Rental"),
+                List.of(
+                    new EntityDTO("Customer", List.of(
+                        new EndpointDTO("GET", "/api/customers", "Get customers")
+                    ))
+                )
+            ),
+
+            new MemberDTO(
+                "Deblina Dey", "💳", "Payments Module",
+                List.of("Payments"),
+                List.of(
+                    new EntityDTO("Payments", List.of(
+                        new EndpointDTO("GET", "/api/payments", "Get payments")
+                    ))
+                )
+            )
+        );
+    }
+}

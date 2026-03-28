@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title th:text="${endpoint.method} + ' ' + ${endpoint.path}">Endpoint</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080810;
+    --surface: #0f0f1a;
+    --card: #161625;
+    --text: #eeeef8;
+    --muted: #66667a;
+    --border: #22223a;
+    --get:    #47ffc8;
+    --post:   #e8ff47;
+    --put:    #ffaa47;
+    --delete: #ff6b6b;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 100;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+
+  /* ── Header ────────────────────────────────────────────────────────── */
+  .header {
+    position: relative; z-index: 1;
+    padding: 36px 64px 32px;
+    border-bottom: 1px solid var(--border);
+    animation: rise 0.5s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 1px; color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .breadcrumb a {
+    color: var(--muted); text-decoration: none;
+    transition: color 0.2s;
+  }
+  .breadcrumb a:hover { color: var(--accent); }
+  .breadcrumb .sep { color: var(--border); }
+  .breadcrumb .current { color: var(--text); }
+
+  .title-row {
+    display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  }
+
+  .method-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px; font-weight: 500;
+    padding: 6px 14px; border-radius: 4px;
+    letter-spacing: 1px; flex-shrink: 0;
+  }
+
+  .GET-pill    { background: rgba(71,255,200,0.1);  color: var(--get); }
+  .POST-pill   { background: rgba(232,255,71,0.1);  color: var(--post); }
+  .PUT-pill    { background: rgba(255,170,71,0.1);  color: var(--put); }
+  .DELETE-pill { background: rgba(255,107,107,0.1); color: var(--delete); }
+
+  .ep-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px; letter-spacing: 2px; color: var(--text);
+  }
+
+  .ep-desc-text {
+    margin-top: 8px;
+    font-size: 13px; color: var(--muted);
+  }
+
+  .url-preview {
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--border);
+    letter-spacing: 1px;
+  }
+
+  /* ── Executor ──────────────────────────────────────────────────────── */
+  .executor {
+    position: relative; z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin: 40px 64px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: rise 0.6s cubic-bezier(0.16,1,0.3,1) 0.08s both;
+  }
+
+  .panel {
+    background: var(--surface);
+    padding: 32px;
+  }
+
+  .panel-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 22px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  /* ── Params ────────────────────────────────────────────────────────── */
+  .no-params {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; color: var(--muted);
+    padding: 20px; text-align: center;
+    border: 1px dashed var(--border);
+    border-radius: 3px;
+    margin-bottom: 18px;
+  }
+
+  .param-group { margin-bottom: 18px; }
+
+  .param-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: flex; gap: 8px; align-items: center;
+  }
+
+  .param-type  { color: var(--accent); font-size: 9px; }
+  .param-req   { color: var(--delete); font-size: 9px; }
+
+  .param-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 14px;
+    font-family: 'DM Mono', monospace; font-size: 12px;
+    border-radius: 3px; outline: none;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+  .param-input:focus { border-color: var(--accent); }
+  .param-input::placeholder { color: var(--muted); opacity: 0.6; }
+
+  textarea.param-input {
+    min-height: 150px; resize: vertical;
+  }
+
+  .send-btn {
+    width: 100%; padding: 13px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none; cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 3px;
+    border-radius: 3px;
+    transition: opacity 0.2s, transform 0.1s;
+    margin-top: 6px;
+  }
+  .send-btn:hover { opacity: 0.88; }
+  .send-btn:active { transform: scale(0.99); }
+  .send-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+
+  /* ── Response ──────────────────────────────────────────────────────── */
+  .status-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; padding: 2px 10px;
+    border-radius: 20px; letter-spacing: 1px;
+  }
+
+  .response-box {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 3px; padding: 16px;
+    min-height: 220px; max-height: 500px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px; line-height: 1.8;
+    color: var(--muted);
+    white-space: pre-wrap; word-break: break-all;
+    overflow-y: auto;
+    transition: border-color 0.3s;
+  }
+
+  .response-box.ok    { border-color: var(--get);    color: var(--text); }
+  .response-box.err   { border-color: var(--delete); }
+
+  .status-ok  { background: rgba(71,255,200,0.12); color: var(--get); }
+  .status-err { background: rgba(255,107,107,0.12); color: var(--delete); }
+
+  @media (max-width: 900px) {
+    .header, .executor { margin-left: 24px; margin-right: 24px; padding-left: 24px; padding-right: 24px; }
+    .executor { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body th:style="'--accent:' + ${member.color}">
+
+<!-- Hidden data for JS -->
+<script th:inline="javascript">
+  const ENDPOINT = {
+    method:  /*[[${endpoint.method}]]*/ 'GET',
+    path:    /*[[${endpoint.path}]]*/ '/api/path',
+    baseUrl: /*[[${baseUrl}]]*/ 'http://localhost:8080',
+    params:  /*[[${endpoint.params}]]*/ []
+  };
+  const MEMBER_INDEX  = /*[[${memberIndex}]]*/ 0;
+  const ENTITY_NAME   = /*[[${entity.name}]]*/ '';
+</script>
+
+<!-- ── Header ──────────────────────────────────────────────────────────── -->
+<header class="header">
+  <nav class="breadcrumb">
+    <a href="/team">Team</a>
+    <span class="sep">›</span>
+    <a th:href="@{/team/{i}(i=${member.index})}" th:text="${member.name}">Member</a>
+    <span class="sep">›</span>
+    <span class="current" th:text="${endpoint.path}">Path</span>
+  </nav>
+
+  <div class="title-row">
+    <span class="method-pill"
+          th:classappend="${endpoint.method} + '-pill'"
+          th:text="${endpoint.method}">GET</span>
+    <span class="ep-title" th:text="${endpoint.path}">/api/path</span>
+  </div>
+
+  <div class="ep-desc-text" th:text="${endpoint.desc}">Description</div>
+  <div class="url-preview" th:text="${baseUrl} + ${endpoint.path}">http://localhost:8080/api/path</div>
+</header>
+
+<!-- ── Executor ────────────────────────────────────────────────────────── -->
+<div class="executor">
+
+  <!-- LEFT: Request Panel -->
+  <div class="panel">
+    <div class="panel-label">Request Parameters</div>
+
+    <div id="params-area">
+      <!-- No params message -->
+      <div class="no-params" th:if="${#lists.isEmpty(endpoint.params)}">
+        No parameters required — ready to send
+      </div>
+
+      <!-- Param inputs -->
+      <div th:each="param : ${endpoint.params}" class="param-group">
+        <div class="param-label">
+          <span th:text="${param.name}">param</span>
+          <span class="param-type" th:text="'[' + ${param.in} + ']'">[path]</span>
+          <span class="param-req" th:if="${param.required}">* required</span>
+        </div>
+
+        <!-- Textarea for body params -->
+        <textarea th:if="${param.in == 'body'}"
+                  class="param-input"
+                  th:id="'param-' + ${param.name}"
+                  th:placeholder="${param.placeholder}"></textarea>
+
+        <!-- Input for path/query params -->
+        <input th:unless="${param.in == 'body'}"
+               class="param-input"
+               type="text"
+               th:id="'param-' + ${param.name}"
+               th:placeholder="${param.placeholder}">
+      </div>
+    </div>
+
+    <button class="send-btn" id="send-btn" onclick="executeRequest()">Send Request</button>
+  </div>
+
+  <!-- RIGHT: Response Panel -->
+  <div class="panel">
+    <div class="panel-label">
+      Response
+      <span class="status-pill" id="status-pill"></span>
+    </div>
+    <div class="response-box" id="response-box">// Response will appear here...</div>
+  </div>
+
+</div>
+
+<script>
+async function executeRequest() {
+  const btn = document.getElementById('send-btn');
+  const box = document.getElementById('response-box');
+  const pill = document.getElementById('status-pill');
+
+  // Build URL from path params
+  let url = ENDPOINT.baseUrl + ENDPOINT.path;
+  let bodyData = null;
+
+  for (const p of ENDPOINT.params) {
+    const el = document.getElementById('param-' + p.name);
+    const val = el ? el.value.trim() : '';
+    if (p.in === 'path') {
+      url = url.replace('{' + p.name + '}', encodeURIComponent(val));
+    } else if (p.in === 'body') {
+      bodyData = val;
+    }
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  box.textContent = '// Waiting for response...';
+  box.className = 'response-box';
+  pill.textContent = '';
+  pill.className = 'status-pill';
+
+  try {
+    const opts = {
+      method: ENDPOINT.method,
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+    };
+    if (bodyData && ['POST','PUT','PATCH'].includes(ENDPOINT.method)) {
+      opts.body = bodyData;
+    }
+
+    const res = await fetch(url, opts);
+    const text = await res.text();
+
+    let display;
+    try { display = JSON.stringify(JSON.parse(text), null, 2); }
+    catch { display = text || '(empty response)'; }
+
+    box.textContent = display;
+    box.className = 'response-box ' + (res.ok ? 'ok' : 'err');
+    pill.textContent = res.status + ' ' + res.statusText;
+    pill.className = 'status-pill ' + (res.ok ? 'status-ok' : 'status-err');
+
+  } catch (err) {
+    box.textContent =
+      '// Network Error\n' +
+      '// Could not reach: ' + url + '\n' +
+      '// Make sure Spring Boot is running on localhost:8080\n\n' +
+      err.message;
+    box.className = 'response-box err';
+    pill.textContent = 'NETWORK ERROR';
+    pill.className = 'status-pill status-err';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send Request';
+  }
+}
+</script>
+
+</body>
+</html>

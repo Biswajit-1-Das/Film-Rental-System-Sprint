@@ -1,0 +1,92 @@
+package com.frontend.dto;
+
+import java.util.List;
+
+public class MemberDTO {
+
+    private int index;
+    private String name;
+    private String emoji;
+    private String color;
+    private String role;
+    private List<String> tags;
+    private List<EntityDTO> entities;
+
+    public MemberDTO(int index, String name, String emoji, String color,
+                     String role, List<String> tags, List<EntityDTO> entities) {
+        this.index = index;
+        this.name = name;
+        this.emoji = emoji;
+        this.color = color;
+        this.role = role;
+        this.tags = tags;
+        this.entities = entities;
+    }
+
+    // ── Getters ──────────────────────────────────────────────────────────────
+
+    public int getIndex()              { return index; }
+    public String getName()            { return name; }
+    public String getEmoji()           { return emoji; }
+    public String getColor()           { return color; }
+    public String getRole()            { return role; }
+    public List<String> getTags()      { return tags; }
+    public List<EntityDTO> getEntities() { return entities; }
+
+    // ── Nested: EntityDTO ────────────────────────────────────────────────────
+
+    public static class EntityDTO {
+        private String name;
+        private List<EndpointDTO> endpoints;
+
+        public EntityDTO(String name, List<EndpointDTO> endpoints) {
+            this.name = name;
+            this.endpoints = endpoints;
+        }
+
+        public String getName()                    { return name; }
+        public List<EndpointDTO> getEndpoints()    { return endpoints; }
+    }
+
+    // ── Nested: EndpointDTO ──────────────────────────────────────────────────
+
+    public static class EndpointDTO {
+        private String method;
+        private String path;
+        private String desc;
+        private List<ParamDTO> params;
+
+        public EndpointDTO(String method, String path, String desc, List<ParamDTO> params) {
+            this.method = method;
+            this.path = path;
+            this.desc = desc;
+            this.params = params;
+        }
+
+        public String getMethod()              { return method; }
+        public String getPath()                { return path; }
+        public String getDesc()                { return desc; }
+        public List<ParamDTO> getParams()      { return params; }
+    }
+
+    // ── Nested: ParamDTO ─────────────────────────────────────────────────────
+
+    public static class ParamDTO {
+        private String name;
+        private String in;   // "path" or "body"
+        private boolean required;
+        private String placeholder;
+
+        public ParamDTO(String name, String in, boolean required, String placeholder) {
+            this.name = name;
+            this.in = in;
+            this.required = required;
+            this.placeholder = placeholder;
+        }
+
+        public String getName()          { return name; }
+        public String getIn()            { return in; }
+        public boolean isRequired()      { return required; }
+        public String getPlaceholder()   { return placeholder; }
+    }
+}

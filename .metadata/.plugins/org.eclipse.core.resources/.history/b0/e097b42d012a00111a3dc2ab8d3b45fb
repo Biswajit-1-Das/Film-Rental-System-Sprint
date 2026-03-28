@@ -1,0 +1,5 @@
+package com.frontend.dto;
+
+public class EndpointDTO {
+
+}

@@ -1,0 +1,29 @@
+package com.frontend.dto;
+
+import java.util.List;
+
+public class MemberDTO {
+
+    private String name;
+    private String emoji;
+    private String role;
+    private List<String> tags;
+    private List<EntityDTO> entities;
+
+    // Constructor
+    public MemberDTO(String name, String emoji, String role,
+                     List<String> tags, List<EntityDTO> entities) {
+        this.name = name;
+        this.emoji = emoji;
+        this.role = role;
+        this.tags = tags;
+        this.entities = entities;
+    }
+
+    // Getters
+    public String getName() { return name; }
+    public String getEmoji() { return emoji; }
+    public String getRole() { return role; }
+    public List<String> getTags() { return tags; }
+    public List<EntityDTO> getEntities() { return entities; }
+}

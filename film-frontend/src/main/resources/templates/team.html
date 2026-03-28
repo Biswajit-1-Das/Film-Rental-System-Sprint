@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Film Rental System — Team</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080810;
+    --surface: #0f0f1a;
+    --card: #161625;
+    --text: #eeeef8;
+    --muted: #66667a;
+    --border: #22223a;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none; z-index: 100;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 300 300' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    opacity: 0.5;
+  }
+
+  /* Ambient glow */
+  body::after {
+    content: '';
+    position: fixed;
+    width: 600px; height: 600px;
+    top: -200px; right: -200px;
+    background: radial-gradient(circle, rgba(232,255,71,0.04) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── Header ────────────────────────────────────────────────────────── */
+  .header {
+    position: relative; z-index: 1;
+    padding: 64px 64px 24px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    animation: rise 0.7s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .header-left {}
+
+  .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .site-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 9vw, 120px);
+    line-height: 0.88;
+    letter-spacing: 3px;
+  }
+
+  .site-title .line2 { color: #e8ff47; }
+
+  .header-right {
+    text-align: right;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 2px;
+    color: var(--muted); line-height: 2.2;
+    padding-bottom: 8px;
+  }
+
+  /* ── Grid ──────────────────────────────────────────────────────────── */
+  .grid-wrapper {
+    position: relative; z-index: 1;
+    padding: 48px 64px 80px;
+    animation: rise 0.8s cubic-bezier(0.16,1,0.3,1) 0.1s both;
+  }
+
+  .grid-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 4px;
+    text-transform: uppercase; color: var(--muted);
+    margin-bottom: 24px;
+  }
+
+  .members-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+
+  .member-card {
+    background: var(--surface);
+    padding: 36px 30px;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex; flex-direction: column; gap: 18px;
+    position: relative; overflow: hidden;
+    transition: background 0.3s ease;
+  }
+
+  /* accent sweep on hover */
+  .member-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; width: 100%; height: 2px;
+    background: var(--accent-color);
+    transition: left 0.4s ease;
+  }
+
+  .member-card:hover { background: var(--card); }
+  .member-card:hover::before { left: 0; }
+  .member-card:hover .card-name { color: var(--accent-color); }
+  .member-card:hover .card-arrow { opacity: 1; transform: translate(4px, -4px); }
+  .member-card:hover .card-avatar { border-color: var(--accent-color); transform: scale(1.04); }
+
+  .card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+
+  .card-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 2px; color: var(--muted);
+  }
+
+  .card-arrow {
+    font-size: 18px;
+    color: var(--accent-color);
+    opacity: 0;
+    transform: translate(-4px, 4px);
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .card-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    background: var(--card);
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; letter-spacing: 1px;
+    color: var(--text);
+    transition: color 0.3s;
+    margin-bottom: 4px;
+  }
+
+  .card-role {
+    font-size: 11px; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 10px;
+  }
+
+  .card-tags {
+    display: flex; flex-wrap: wrap; gap: 5px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 2px;
+    border: 1px solid;
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    opacity: 0.6;
+  }
+
+  /* ── Footer ────────────────────────────────────────────────────────── */
+  .footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 24px 64px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .footer-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 2px; color: var(--muted);
+  }
+
+  @media (max-width: 900px) {
+    .header, .grid-wrapper, .footer { padding-left: 24px; padding-right: 24px; }
+    .members-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 560px) {
+    .members-grid { grid-template-columns: 1fr; }
+    .header { flex-direction: column; gap: 16px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <div class="eyebrow">Spring Boot · MySQL · REST API</div>
+    <div class="site-title">
+      Meet The<br><span class="line2">Team</span>
+    </div>
+  </div>
+  <div class="header-right">
+    6 DEVELOPERS<br>
+    FILM RENTAL SYSTEM<br>
+    SAKILA DB
+  </div>
+</header>
+
+<div class="grid-wrapper">
+  <div class="grid-label">Select a member to view their endpoints</div>
+  <div class="members-grid">
+
+    <a th:each="member, stat : ${members}"
+       th:href="@{/team/{i}(i=${member.index})}"
+       class="member-card"
+       th:style="'--accent-color:' + ${member.color}">
+
+      <div class="card-top">
+        <span class="card-num" th:text="'0' + ${stat.count}">01</span>
+        <span class="card-arrow">↗️</span>
+      </div>
+
+      <div class="card-avatar" th:text="${member.emoji}">🎬</div>
+
+      <div>
+        <div class="card-name" th:text="${member.name}">Member Name</div>
+        <div class="card-role" th:text="${member.role}">Role</div>
+        <div class="card-tags">
+          <span class="tag" th:each="tag : ${member.tags}" th:text="${tag}">Tag</span>
+        </div>
+      </div>
+
+    </a>
+
+  </div>
+</div>
+
+<footer class="footer">
+  <span class="footer-text">Film Rental System</span>
+  <span class="footer-text" th:text="${members.size()} + ' CONTRIBUTORS'">6 CONTRIBUTORS</span>
+</footer>
+
+</body>
+</html>

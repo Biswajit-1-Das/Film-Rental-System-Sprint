@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<a href="/team">← Back</a>
+
+<h1 th:text="${member.name}"></h1>
+
+<div th:each="entity : ${member.entities}">
+
+    <h3 th:text="${entity.name}"></h3>
+
+    <div th:each="ep : ${entity.endpoints}">
+
+        <form action="/execute" method="post">
+
+            <span th:text="${ep.method}"></span>
+            <span th:text="${ep.path}"></span>
+
+            <input type="hidden" name="method" th:value="${ep.method}">
+            <input type="hidden" name="url"
+                   th:value="'http://localhost:8080' + ${ep.path}">
+
+            <div th:if="${ep.method == 'POST'}">
+                <textarea name="body"></textarea>
+            </div>
+
+            <button type="submit">Execute</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

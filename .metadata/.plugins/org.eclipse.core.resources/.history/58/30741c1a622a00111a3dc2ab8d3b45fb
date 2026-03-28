@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<h2>Response</h2>
+
+<pre th:text="${response}"></pre>
+
+<a href="/team">Back</a>
+
+</body>
+</html>

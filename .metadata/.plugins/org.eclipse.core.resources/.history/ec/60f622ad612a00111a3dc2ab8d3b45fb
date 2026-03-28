@@ -1,0 +1,83 @@
+package com.frontend.controller;
+import com.frontend.dto.MemberDTO;
+import com.frontend.dto.EntityDTO;      
+import com.frontend.service.TeamDataService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.List;
+
+/**
+ * Serves the three team-showcase pages:
+ *   /team              → team grid (Page 1)
+ *   /team/{index}      → member's endpoint list (Page 2)
+ *   /team/{index}/endpoint → endpoint executor (Page 3)
+ */
+@Controller
+public class TeamController {
+
+    private final TeamDataService dataService;
+
+    public TeamController(TeamDataService dataService) {
+        this.dataService = dataService;
+    }
+
+    // ── Page 1: Team Grid ────────────────────────────────────────────────────
+
+    @GetMapping({"/", "/team"})
+    public String teamPage(Model model) {
+        model.addAttribute("members", dataService.getMembers());
+        return "team";
+    }
+
+    // ── Page 2: Member Endpoints ─────────────────────────────────────────────
+
+    @GetMapping("/team/{index}")
+    public String memberPage(@PathVariable int index, Model model) {
+        List<MemberDTO> members = dataService.getMembers();
+        if (index < 0 || index >= members.size()) {
+            return "redirect:/team";
+        }
+        model.addAttribute("member", members.get(index));
+        return "member";
+    }
+
+    // ── Page 3: Endpoint Executor ────────────────────────────────────────────
+
+    @GetMapping("/team/{memberIndex}/endpoint")
+    public String endpointPage(
+            @PathVariable int memberIndex,
+            @RequestParam String entity,
+            @RequestParam int epIndex,
+            Model model) {
+
+        List<MemberDTO> members = dataService.getMembers();
+        if (memberIndex < 0 || memberIndex >= members.size()) {
+            return "redirect:/team";
+        }
+
+        MemberDTO member = members.get(memberIndex);
+     // ✅ Use EntityDTO directly, not MemberDTO.EntityDTO
+        EntityDTO entityDTO = member.getEntities().stream()
+                .filter(e -> e.getName().equals(entity))
+                .findFirst()
+                .orElse(null);
+
+        if (entityDTO == null || epIndex < 0 || epIndex >= entityDTO.getEndpoints().size()) {
+            return "redirect:/team/" + memberIndex;
+        }
+
+        MemberDTO.EndpointDTO endpoint = entityDTO.getEndpoints().get(epIndex);
+
+        model.addAttribute("member", member);
+        model.addAttribute("entity", entityDTO);
+        model.addAttribute("endpoint", endpoint);
+        model.addAttribute("memberIndex", memberIndex);
+        model.addAttribute("baseUrl", "http://localhost:8080");
+
+        return "endpoint";
+    }
+}
