@@ -1,5 +1,6 @@
 package com.logincontroller.filmrentalsystem.controller;
 
+import com.logincontroller.filmrentalsystem.dto.CategoryDTO;
 import com.logincontroller.filmrentalsystem.model.Category;
 import com.logincontroller.filmrentalsystem.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -8,36 +9,36 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
     @GetMapping
-    public ResponseEntity<List<Category>> getAllCategories() {
+    public ResponseEntity<List<CategoryDTO>> getAllCategories() {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Category> getCategoryById(@PathVariable Integer id) {
+    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Integer id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Category> getCategoryByName(@RequestParam String name) {
+    public ResponseEntity<CategoryDTO> getCategoryByName(@RequestParam String name) {
         return ResponseEntity.ok(categoryService.getCategoryByName(name));
     }
 
     @PostMapping
-    public ResponseEntity<Category> createCategory(@RequestBody Category category) {
+    public ResponseEntity<CategoryDTO> createCategory(@RequestBody Category category) {
         return ResponseEntity.ok(categoryService.saveCategory(category));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@PathVariable Integer id,
-                                                   @RequestBody Category category) {
-        Category existing = categoryService.getCategoryById(id);
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Integer id,
+                                                      @RequestBody Category category) {
+        Category existing = categoryService.getEntityById(id);
         existing.setName(category.getName());
         return ResponseEntity.ok(categoryService.saveCategory(existing));
     }
