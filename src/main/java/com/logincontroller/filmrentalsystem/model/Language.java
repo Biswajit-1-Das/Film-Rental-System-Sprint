@@ -1,5 +1,8 @@
 package com.logincontroller.filmrentalsystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore; // ADD THIS IMPORT
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,6 +12,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "language")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -28,18 +32,15 @@ public class Language {
             insertable = false, updatable = false)
     private LocalDateTime lastUpdate;
 
-    //Inverse side — films using this as primary language
-    @OneToMany(mappedBy = "language",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+    // Inverse side — films using this as primary language
+    @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore // 🔥 CRITICAL FIX: Stops the infinite loop!
     private Set<Film> films = new HashSet<>();
 
-    //Inverse side — films using this as original language
-    @OneToMany(mappedBy = "originalLanguage",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY)
+    // Inverse side — films using this as original language
+    @OneToMany(mappedBy = "originalLanguage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore // 🔥 CRITICAL FIX: Stops the infinite loop!
     private Set<Film> originalLanguageFilms = new HashSet<>();
-
 
     public void addFilm(Film film) {
         films.add(film);

@@ -1,6 +1,5 @@
 package com.logincontroller.filmrentalsystem.service;
 
-
 import com.logincontroller.filmrentalsystem.model.Country;
 import com.logincontroller.filmrentalsystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,34 +13,56 @@ public class CountryService {
 
     private final CountryRepository countryRepository;
 
-    // Returns all countries sorted A-Z — used to populate address form dropdowns
+    // ── CREATE ────────────────────────────────────────────────
+    @Transactional
+    public Country createCountry(String countryName) {
+        if (countryRepository.existsByCountryIgnoreCase(countryName)) {
+            throw new RuntimeException(
+                    "Country already exists: " + countryName);
+        }
+        return countryRepository.save(
+                Country.builder().country(countryName).build());
+    }
+
+    // ── READ ──────────────────────────────────────────────────
     public List<Country> getAllCountries() {
         return countryRepository.findAllByOrderByCountryAsc();
     }
 
-    // Fetch a single country by ID — throws if not found
-    public Country getCountryById(Integer id) {
+    public Country getCountryById(int id) {
         return countryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException(
                         "Country not found with id: " + id));
     }
 
-    // Find by name (case-insensitive) — used during address resolution
     public Country getCountryByName(String name) {
         return countryRepository.findByCountryIgnoreCase(name)
                 .orElseThrow(() -> new RuntimeException(
                         "Country not found: " + name));
     }
 
-    // Returns existing country if name matches, otherwise creates a new one
     @Transactional
     public Country resolveOrCreate(String countryName) {
         return countryRepository.findByCountryIgnoreCase(countryName)
-                .orElseGet(() -> {
-                    Country newCountry = Country.builder()
-                            .country(countryName)
-                            .build();
-                    return countryRepository.save(newCountry);
-                });
+                .orElseGet(() -> countryRepository.save(
+                        Country.builder().country(countryName).build()));
+    }
+
+    // ── UPDATE ────────────────────────────────────────────────
+    @Transactional
+    public Country updateCountry(int id, String newName) {
+        Country existing = getCountryById(id);
+        existing.setCountry(newName);
+        return countryRepository.save(existing);
+    }
+
+    // ── DELETE ────────────────────────────────────────────────
+    @Transactional
+    public void deleteCountry(int id) {
+        if (!countryRepository.existsById(id)) {
+            throw new RuntimeException(
+                    "Country not found with id: " + id);
+        }
+        countryRepository.deleteById(id);
     }
 }

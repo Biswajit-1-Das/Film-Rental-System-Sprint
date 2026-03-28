@@ -2,36 +2,65 @@ package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.model.City;
 import com.logincontroller.filmrentalsystem.repository.CityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CityService {
-    @Autowired
-    CityRepository cityRepository;
-    public City saveCity(City city)
-    {
-        return city;
+
+    private final CityRepository cityRepository;  // ✅ removed unused CountryRepository
+
+    // ── CREATE ────────────────────────────────────────────────
+    @Transactional
+    public City createCity(City city) {
+        return cityRepository.save(city);
     }
-    public List<City> getAllCities()
-    {
+
+    // ── READ ──────────────────────────────────────────────────
+    public List<City> getAllCities() {
         return cityRepository.findAll();
     }
-    public City findById(int cityId)
-    {
+
+    public City getCityById(int cityId) {
         return cityRepository.findById(cityId)
-                .orElseThrow(()-> new RuntimeException("City not found"));
+                .orElseThrow(() -> new RuntimeException(
+                        "City not found with id: " + cityId));
     }
-    public City findByCity(String city)
-    {
-        return cityRepository.findByCity(city)
-                .orElseThrow(()-> new RuntimeException("City not found"));
+
+    public City getCityByName(String cityName) {
+        return cityRepository.findByCity(cityName)
+                .orElseThrow(() -> new RuntimeException(
+                        "City not found: " + cityName));
     }
-    public City findByCountryId(int countryId)
-    {
-        return cityRepository.findByCountryId(countryId)
-                .orElseThrow(()->new RuntimeException("City not found"));
+
+    public List<City> getCitiesByCountryId(int countryId) {
+        return cityRepository.findByCountryCountryId(countryId);
+    }
+
+    public List<City> getCitiesByCountryName(String countryName) {
+        return cityRepository.findByCountryCountryIgnoreCase(countryName);
+    }
+
+    // ── UPDATE ────────────────────────────────────────────────
+    @Transactional
+    public City updateCity(int cityId, City updatedData) {
+        City existing = getCityById(cityId);
+        existing.setCity(updatedData.getCity());
+        if (updatedData.getCountry() != null) {
+            existing.setCountry(updatedData.getCountry());
+        }
+        return cityRepository.save(existing);
+    }
+
+    // ── DELETE ────────────────────────────────────────────────
+    @Transactional
+    public void deleteCity(int cityId) {
+        if (!cityRepository.existsById(cityId)) {
+            throw new RuntimeException("City not found with id: " + cityId);
+        }
+        cityRepository.deleteById(cityId);
     }
 }

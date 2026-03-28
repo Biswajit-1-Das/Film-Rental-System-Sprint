@@ -95,16 +95,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!--
-            SPRING SECURITY
-            Handles login, logout, who can access what.
-            We'll configure it to use HTTP Basic Auth (username + password
-            sent in the request header, simplest possible auth).
-        -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
 
         <!--
             LOMBOK

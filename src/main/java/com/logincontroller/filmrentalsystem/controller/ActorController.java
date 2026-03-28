@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/actors")
+@RequestMapping("/api/actors")
 @RequiredArgsConstructor
 public class ActorController {
 

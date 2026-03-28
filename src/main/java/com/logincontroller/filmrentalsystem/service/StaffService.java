@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class StaffService {
+public class StaffService{
 
     @Autowired
     private StaffRepository staffRepository;
@@ -85,5 +85,19 @@ public class StaffService {
         existing.setStore(store);
 
         return staffRepository.save(existing);
+    }
+
+    public Staff login(String username, String password) {
+        Staff staff = staffRepository.findByUsername(username);
+
+        if (staff == null) {
+            throw new RuntimeException("User not found");
+        }
+
+        if (!staff.getPassword().equals(password)) {
+            throw new RuntimeException("Invalid password");
+        }
+
+        return staff;
     }
 }
