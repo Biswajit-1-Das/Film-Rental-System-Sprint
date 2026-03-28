@@ -42,9 +42,19 @@ public class ActorService {
                 .collect(Collectors.toList());
     }
 
+    // returns only full names — used for lightweight actor listing page
+    public List<String> getAllActorNames() {
+        return actorRepository.findAll()
+                .stream()
+                .map(actor -> actor.getFirstName() + " " + actor.getLastName())
+                .collect(Collectors.toList());
+    }
+
     public ActorDTO getActorById(Short id) {
         return toDTO(getEntityById(id));
     }
+
+
 
     public List<ActorDTO> searchByFirstName(String firstName) {
         return actorRepository.findByFirstNameContainingIgnoreCase(firstName)
