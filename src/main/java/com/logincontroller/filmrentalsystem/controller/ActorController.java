@@ -14,10 +14,10 @@ import java.util.List;
 public class ActorController {
 
     private final ActorService actorService;
-
+    // GET /actors/names — lightweight endpoint for the actor listing page
     @GetMapping
-    public ResponseEntity<List<ActorDTO>> getAllActors() {
-        return ResponseEntity.ok(actorService.getAllActors());
+    public ResponseEntity<List<String>> getAllActorNames() {
+        return ResponseEntity.ok(actorService.getAllActorNames());
     }
 
     @GetMapping("/{id}")
