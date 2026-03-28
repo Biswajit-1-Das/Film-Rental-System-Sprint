@@ -1,59 +1,55 @@
 package com.logincontroller.filmrentalsystem.controller;
 
+import com.logincontroller.filmrentalsystem.dto.StoreDTO;
 import com.logincontroller.filmrentalsystem.model.Store;
-import com.logincontroller.filmrentalsystem.service.StoresService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.logincontroller.filmrentalsystem.service.AddressService;
+import com.logincontroller.filmrentalsystem.service.StoreService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/stores")
+@RequestMapping("/stores")
+@RequiredArgsConstructor
 public class StoreController {
 
-    @Autowired
-    private StoresService storeService;
+    private final StoreService storeService;
+    private final AddressService addressService;
 
-    // ✅ CREATE
-    @PostMapping
-    public Store createStore(@RequestParam Integer managerStaffId,
-                             @RequestParam Integer addressId,
-                             @RequestBody Store store) {
-
-        return storeService.createStore(managerStaffId, addressId, store);
-    }
-
-    // ✅ GET BY ID
-    @GetMapping("/{id}")
-    public Store getStoreById(@PathVariable Integer id) {
-        return storeService.getStoreById(id);
-    }
-
-    // ✅ GET ALL
     @GetMapping
-    public List<Store> getAllStores() {
-        return storeService.getAllStores();
+    public ResponseEntity<List<StoreDTO>> getAllStores() {
+        return ResponseEntity.ok(storeService.getAllStores());
     }
 
-    // ✅ GET BY ADDRESS
-    @GetMapping("/address/{addressId}")
-    public List<Store> getByAddress(@PathVariable Integer addressId) {
-        return storeService.getStoresByAddress(addressId);
+    @GetMapping("/{id}")
+    public ResponseEntity<StoreDTO> getStoreById(@PathVariable Integer id) {
+        return ResponseEntity.ok(storeService.getStoreById(id));
     }
 
-    // ✅ GET BY MANAGER
-    @GetMapping("/manager/{staffId}")
-    public List<Store> getByManager(@PathVariable Integer staffId) {
-        return storeService.getStoresByManager(staffId);
+    @PostMapping
+    public ResponseEntity<StoreDTO> createStore(@RequestBody Store store) {
+        if (store.getAddress() != null && store.getAddress().getAddressId() != null) {
+            store.setAddress(addressService.getEntityById(store.getAddress().getAddressId()));
+        }
+        return ResponseEntity.ok(storeService.saveStore(store));
     }
 
-    // ✅ UPDATE
     @PutMapping("/{id}")
-    public Store updateStore(@PathVariable Integer id,
-                             @RequestParam Integer managerStaffId,
-                             @RequestParam Integer addressId,
-                             @RequestBody Store store) {
+    public ResponseEntity<StoreDTO> updateStore(@PathVariable Integer id,
+                                                @RequestBody Store store) {
+        Store existing = storeService.getEntityById(id);
+        if (store.getAddress() != null && store.getAddress().getAddressId() != null) {
+            existing.setAddress(
+                    addressService.getEntityById(store.getAddress().getAddressId())
+            );
+        }
+        return ResponseEntity.ok(storeService.saveStore(existing));
+    }
 
-        return storeService.updateStore(id, store, managerStaffId, addressId);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteStore(@PathVariable Integer id) {
+        storeService.deleteStore(id);
+        return ResponseEntity.ok("Store deleted successfully");
     }
 }

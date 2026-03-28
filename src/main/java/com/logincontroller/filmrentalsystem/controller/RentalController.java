@@ -9,7 +9,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/rentals")
-public class RentalController {
+public class
+RentalController {
 
     @Autowired
     private RentalService rentalService;
