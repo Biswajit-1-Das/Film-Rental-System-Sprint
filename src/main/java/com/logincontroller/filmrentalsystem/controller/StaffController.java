@@ -1,65 +1,76 @@
 package com.logincontroller.filmrentalsystem.controller;
 
+import com.logincontroller.filmrentalsystem.dto.StaffDTO;
 import com.logincontroller.filmrentalsystem.model.Staff;
 import com.logincontroller.filmrentalsystem.service.StaffService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/staff")
+@RequestMapping("/staff")
+@RequiredArgsConstructor
 public class StaffController {
 
-    @Autowired
-    private StaffService staffService;
+    private final StaffService staffService;
 
-    // ✅ CREATE
-    @PostMapping
-    public Staff createStaff(@RequestParam Integer addressId,
-                             @RequestParam Integer storeId,
-                             @RequestBody Staff staff) {
-
-        return staffService.createStaff(addressId, storeId, staff);
-    }
-
-    // ✅ GET BY ID
-    @GetMapping("/{id}")
-    public Staff getStaffById(@PathVariable Integer id) {
-        return staffService.getStaffById(id);
-    }
-
-    // ✅ GET ALL
     @GetMapping
-    public List<Staff> getAllStaff() {
-        return staffService.getAllStaff();
+    public ResponseEntity<List<StaffDTO>> getAllStaff() {
+        return ResponseEntity.ok(staffService.getAllStaff());
     }
 
-    // ✅ GET BY ADDRESS
-    @GetMapping("/address/{addressId}")
-    public List<Staff> getByAddress(@PathVariable Integer addressId) {
-        return staffService.getStaffByAddress(addressId);
+    @GetMapping("/active")
+    public ResponseEntity<List<StaffDTO>> getActiveStaff() {
+        return ResponseEntity.ok(staffService.getActiveStaff());
     }
 
-    // ✅ GET BY STORE
     @GetMapping("/store/{storeId}")
-    public List<Staff> getByStore(@PathVariable Integer storeId) {
-        return staffService.getStaffByStore(storeId);
+    public ResponseEntity<List<StaffDTO>> getStaffByStore(@PathVariable Integer storeId) {
+        return ResponseEntity.ok(staffService.getStaffByStore(storeId));
     }
 
-    // ✅ GET BY USERNAME
-    @GetMapping("/username/{username}")
-    public Staff getByUsername(@PathVariable String username) {
-        return staffService.getByUsername(username);
+    @GetMapping("/{id}")
+    public ResponseEntity<StaffDTO> getStaffById(@PathVariable Integer id) {
+        return ResponseEntity.ok(staffService.getStaffById(id));
     }
 
-    // ✅ UPDATE
+    @PostMapping
+    public ResponseEntity<StaffDTO> createStaff(@RequestBody Staff staff) {
+        return ResponseEntity.ok(staffService.createStaff(staff));
+    }
+
     @PutMapping("/{id}")
-    public Staff updateStaff(@PathVariable Integer id,
-                             @RequestParam Integer addressId,
-                             @RequestParam Integer storeId,
-                             @RequestBody Staff staff) {
+    public ResponseEntity<StaffDTO> updateStaff(@PathVariable Integer id,
+                                                @RequestBody Staff staff) {
+        return ResponseEntity.ok(staffService.updateStaff(id, staff));
+    }
 
-        return staffService.updateStaff(id, staff, addressId, storeId);
+    @PostMapping("/{id}/picture")
+    public ResponseEntity<String> uploadPicture(@PathVariable Integer id,
+                                                @RequestParam MultipartFile file)
+            throws IOException {
+        staffService.uploadPicture(id, file);
+        return ResponseEntity.ok("Picture uploaded successfully");
+    }
+
+    @GetMapping(value = "/{id}/picture", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getPicture(@PathVariable Integer id) {
+        return ResponseEntity.ok(staffService.getPicture(id));
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<String> deactivateStaff(@PathVariable Integer id) {
+        staffService.deactivateStaff(id);
+        return ResponseEntity.ok("Staff deactivated successfully");
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<String> activateStaff(@PathVariable Integer id) {
+        staffService.activateStaff(id);
+        return ResponseEntity.ok("Staff activated successfully");
     }
 }
