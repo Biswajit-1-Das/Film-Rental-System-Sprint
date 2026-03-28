@@ -1,11 +1,13 @@
 package com.logincontroller.filmrentalsystem.service;
 
+import com.logincontroller.filmrentalsystem.dto.CountryDTO;
 import com.logincontroller.filmrentalsystem.model.Country;
 import com.logincontroller.filmrentalsystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -13,56 +15,53 @@ public class CountryService {
 
     private final CountryRepository countryRepository;
 
-    // ── CREATE ────────────────────────────────────────────────
-    @Transactional
-    public Country createCountry(String countryName) {
-        if (countryRepository.existsByCountryIgnoreCase(countryName)) {
-            throw new RuntimeException(
-                    "Country already exists: " + countryName);
-        }
-        return countryRepository.save(
-                Country.builder().country(countryName).build());
+    private CountryDTO toDTO(Country country) {
+        CountryDTO dto = new CountryDTO();
+        dto.setCountryId(country.getCountryId());
+        dto.setCountry(country.getCountry());
+        dto.setLastUpdate(country.getLastUpdate());
+        return dto;
     }
 
-    // ── READ ──────────────────────────────────────────────────
-    public List<Country> getAllCountries() {
-        return countryRepository.findAllByOrderByCountryAsc();
-    }
-
-    public Country getCountryById(int id) {
+    public Country getEntityById(Integer id) {
         return countryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException(
-                        "Country not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Country not found with id: " + id));
     }
 
-    public Country getCountryByName(String name) {
-        return countryRepository.findByCountryIgnoreCase(name)
-                .orElseThrow(() -> new RuntimeException(
-                        "Country not found: " + name));
+    public List<CountryDTO> getAllCountries() {
+        return countryRepository.findAllByOrderByCountryAsc()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public CountryDTO getCountryById(Integer id) {
+        return toDTO(getEntityById(id));
+    }
+
+    public CountryDTO getCountryByName(String name) {
+        Country country = countryRepository.findByCountryIgnoreCase(name)
+                .orElseThrow(() -> new RuntimeException("Country not found: " + name));
+        return toDTO(country);
     }
 
     @Transactional
-    public Country resolveOrCreate(String countryName) {
-        return countryRepository.findByCountryIgnoreCase(countryName)
-                .orElseGet(() -> countryRepository.save(
-                        Country.builder().country(countryName).build()));
+    public CountryDTO saveCountry(Country country) {
+        return toDTO(countryRepository.save(country));
     }
 
-    // ── UPDATE ────────────────────────────────────────────────
     @Transactional
-    public Country updateCountry(int id, String newName) {
-        Country existing = getCountryById(id);
-        existing.setCountry(newName);
-        return countryRepository.save(existing);
+    public CountryDTO resolveOrCreate(String countryName) {
+        Country country = countryRepository.findByCountryIgnoreCase(countryName)
+                .orElseGet(() -> {
+                    Country newCountry = new Country();
+                    newCountry.setCountry(countryName);
+                    return countryRepository.save(newCountry);
+                });
+        return toDTO(country);
     }
 
-    // ── DELETE ────────────────────────────────────────────────
-    @Transactional
-    public void deleteCountry(int id) {
-        if (!countryRepository.existsById(id)) {
-            throw new RuntimeException(
-                    "Country not found with id: " + id);
-        }
+    public void deleteCountry(Integer id) {
         countryRepository.deleteById(id);
     }
 }

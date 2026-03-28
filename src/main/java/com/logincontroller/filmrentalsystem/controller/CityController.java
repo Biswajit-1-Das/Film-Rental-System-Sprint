@@ -1,69 +1,61 @@
 package com.logincontroller.filmrentalsystem.controller;
 
+import com.logincontroller.filmrentalsystem.dto.CityDTO;
 import com.logincontroller.filmrentalsystem.model.City;
 import com.logincontroller.filmrentalsystem.service.CityService;
+import com.logincontroller.filmrentalsystem.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cities")
+@RequestMapping("/cities")
 @RequiredArgsConstructor
 public class CityController {
 
     private final CityService cityService;
+    private final CountryService countryService;
 
-    // GET /cities
     @GetMapping
-    public ResponseEntity<List<City>> getAllCities() {
+    public ResponseEntity<List<CityDTO>> getAllCities() {
         return ResponseEntity.ok(cityService.getAllCities());
     }
 
-    // GET /cities/{id}
     @GetMapping("/{id}")
-    public ResponseEntity<City> getCityById(@PathVariable int id) {
+    public ResponseEntity<CityDTO> getCityById(@PathVariable Integer id) {
         return ResponseEntity.ok(cityService.getCityById(id));
     }
 
-    // GET /cities/search?name=London
-    @GetMapping("/search")
-    public ResponseEntity<City> getCityByName(@RequestParam String name) {
-        return ResponseEntity.ok(cityService.getCityByName(name));
-    }
-
-    // GET /cities/country/{countryId}
     @GetMapping("/country/{countryId}")
-    public ResponseEntity<List<City>> getCitiesByCountryId(
-            @PathVariable int countryId) {
-        return ResponseEntity.ok(cityService.getCitiesByCountryId(countryId));
+    public ResponseEntity<List<CityDTO>> getCitiesByCountry(
+            @PathVariable Integer countryId) {
+        return ResponseEntity.ok(cityService.getCitiesByCountry(countryId));
     }
 
-    // GET /cities/country/name?name=India
-    @GetMapping("/country/name")
-    public ResponseEntity<List<City>> getCitiesByCountryName(
-            @RequestParam String name) {
-        return ResponseEntity.ok(cityService.getCitiesByCountryName(name));
-    }
-
-    // POST /cities
     @PostMapping
-    public ResponseEntity<City> createCity(@RequestBody City city) {
-        return ResponseEntity.ok(cityService.createCity(city));
+    public ResponseEntity<CityDTO> createCity(@PathVariable Integer countryId,
+                                              @RequestBody City city) {
+        // resolve country entity and assign before saving
+        city.setCountry(countryService.getEntityById(countryId));
+        return ResponseEntity.ok(cityService.saveCity(city));
     }
 
-    // PUT /cities/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<City> updateCity(
-            @PathVariable int id,
-            @RequestBody City updatedData) {
-        return ResponseEntity.ok(cityService.updateCity(id, updatedData));
+    public ResponseEntity<CityDTO> updateCity(@PathVariable Integer id,
+                                              @RequestBody City city) {
+        City existing = cityService.getEntityById(id);
+        existing.setCity(city.getCity());
+        if (city.getCountry() != null) {
+            existing.setCountry(
+                    countryService.getEntityById(city.getCountry().getCountryId())
+            );
+        }
+        return ResponseEntity.ok(cityService.saveCity(existing));
     }
 
-    // DELETE /cities/{id}
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCity(@PathVariable int id) {
+    public ResponseEntity<String> deleteCity(@PathVariable Integer id) {
         cityService.deleteCity(id);
         return ResponseEntity.ok("City deleted successfully");
     }

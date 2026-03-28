@@ -2,12 +2,10 @@ package com.logincontroller.filmrentalsystem.dto;
 
 import lombok.Data;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
-public class CategoryDTO {
-    private Integer categoryId;
-    private String name;
+public class CountryDTO {
+    private Integer countryId;
+    private String country;
     private LocalDateTime lastUpdate;
-    private List<String> filmTitles;
 }

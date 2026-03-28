@@ -1,66 +1,60 @@
 package com.logincontroller.filmrentalsystem.service;
 
+import com.logincontroller.filmrentalsystem.dto.CityDTO;
 import com.logincontroller.filmrentalsystem.model.City;
 import com.logincontroller.filmrentalsystem.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CityService {
 
-    private final CityRepository cityRepository;  // ✅ removed unused CountryRepository
+    private final CityRepository cityRepository;
 
-    // ── CREATE ────────────────────────────────────────────────
-    @Transactional
-    public City createCity(City city) {
-        return cityRepository.save(city);
-    }
-
-    // ── READ ──────────────────────────────────────────────────
-    public List<City> getAllCities() {
-        return cityRepository.findAll();
-    }
-
-    public City getCityById(int cityId) {
-        return cityRepository.findById(cityId)
-                .orElseThrow(() -> new RuntimeException(
-                        "City not found with id: " + cityId));
-    }
-
-    public City getCityByName(String cityName) {
-        return cityRepository.findByCity(cityName)
-                .orElseThrow(() -> new RuntimeException(
-                        "City not found: " + cityName));
-    }
-
-    public List<City> getCitiesByCountryId(int countryId) {
-        return cityRepository.findByCountryCountryId(countryId);
-    }
-
-    public List<City> getCitiesByCountryName(String countryName) {
-        return cityRepository.findByCountryCountryIgnoreCase(countryName);
-    }
-
-    // ── UPDATE ────────────────────────────────────────────────
-    @Transactional
-    public City updateCity(int cityId, City updatedData) {
-        City existing = getCityById(cityId);
-        existing.setCity(updatedData.getCity());
-        if (updatedData.getCountry() != null) {
-            existing.setCountry(updatedData.getCountry());
+    private CityDTO toDTO(City city) {
+        CityDTO dto = new CityDTO();
+        dto.setCityId(city.getCityId());
+        dto.setCity(city.getCity());
+        dto.setLastUpdate(city.getLastUpdate());
+        // flatten country into just id and name
+        if (city.getCountry() != null) {
+            dto.setCountryId(city.getCountry().getCountryId());
+            dto.setCountryName(city.getCountry().getCountry());
         }
-        return cityRepository.save(existing);
+        return dto;
     }
 
-    // ── DELETE ────────────────────────────────────────────────
-    @Transactional
-    public void deleteCity(int cityId) {
-        if (!cityRepository.existsById(cityId)) {
-            throw new RuntimeException("City not found with id: " + cityId);
-        }
-        cityRepository.deleteById(cityId);
+    public City getEntityById(Integer id) {
+        return cityRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("City not found with id: " + id));
+    }
+
+    public List<CityDTO> getAllCities() {
+        return cityRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public CityDTO getCityById(Integer id) {
+        return toDTO(getEntityById(id));
+    }
+
+    public List<CityDTO> getCitiesByCountry(Integer countryId) {
+        return cityRepository.findByCountryCountryId(countryId)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public CityDTO saveCity(City city) {
+        return toDTO(cityRepository.save(city));
+    }
+
+    public void deleteCity(Integer id) {
+        cityRepository.deleteById(id);
     }
 }
