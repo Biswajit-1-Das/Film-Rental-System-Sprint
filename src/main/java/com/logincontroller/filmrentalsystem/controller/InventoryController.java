@@ -1,50 +1,66 @@
 package com.logincontroller.filmrentalsystem.controller;
 
+import com.logincontroller.filmrentalsystem.dto.InventoryResponseDTO;
 import com.logincontroller.filmrentalsystem.model.Inventory;
 import com.logincontroller.filmrentalsystem.service.InventoryService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/inventory")
+@RequiredArgsConstructor
 public class InventoryController {
 
     private final InventoryService inventoryService;
 
-    public InventoryController(InventoryService inventoryService) {
-        this.inventoryService = inventoryService;
+    @PostMapping("/add")
+    public ResponseEntity<InventoryResponseDTO> add(@RequestBody Inventory inventory) {
+        return ResponseEntity.ok(inventoryService.saveInventory(inventory));
     }
 
-    @GetMapping
-    public List<Inventory> getAllInventory() {
-        return inventoryService.getAllInventory();
+    @GetMapping("/films")
+    public ResponseEntity<List<InventoryResponseDTO>> allInventoryFilms() {
+        return ResponseEntity.ok(inventoryService.getAllInventory());
+    }
+
+    @GetMapping("/store/{id}")
+    public ResponseEntity<List<InventoryResponseDTO>> byStore(@PathVariable Byte id) {
+        return ResponseEntity.ok(inventoryService.getInventoryByStore(id));
+    }
+
+    @GetMapping("/film/{id}")
+    public ResponseEntity<List<InventoryResponseDTO>> byFilm(@PathVariable Short id) {
+        return ResponseEntity.ok(inventoryService.getInventoryByFilm(id));
+    }
+
+    @GetMapping("/film/{filmId}/store/{storeId}")
+    public ResponseEntity<List<InventoryResponseDTO>> byFilmAndStore(
+            @PathVariable Short filmId,
+            @PathVariable Byte storeId) {
+        return ResponseEntity.ok(inventoryService.getInventoryByFilmAndStore(filmId, storeId));
     }
 
     @GetMapping("/{id}")
-    public Inventory getInventoryById(@PathVariable Integer id) {
-        return inventoryService.getInventoryById(id);
+    public ResponseEntity<InventoryResponseDTO> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(inventoryService.getInventoryById(id));
     }
 
-    // Example: /api/inventory/film/5
-    @GetMapping("/film/{filmId}")
-    public List<Inventory> getInventoryByFilm(@PathVariable Short filmId) {
-        return inventoryService.getInventoryByFilm(filmId);
-    }
-
-    // Example: /api/inventory/store/1
-    @GetMapping("/store/{storeId}")
-    public List<Inventory> getInventoryByStore(@PathVariable Integer storeId) {
-        return inventoryService.getInventoryByStore(storeId);
+    @GetMapping
+    public ResponseEntity<List<InventoryResponseDTO>> getAll() {
+        return ResponseEntity.ok(inventoryService.getAllInventory());
     }
 
     @PostMapping
-    public Inventory createInventory(@RequestBody Inventory inventory) {
-        return inventoryService.saveInventory(inventory);
+    public ResponseEntity<InventoryResponseDTO> createLegacy(@RequestBody Inventory inventory) {
+        return ResponseEntity.ok(inventoryService.saveInventory(inventory));
     }
 
     @DeleteMapping("/{id}")
-    public void deleteInventory(@PathVariable Integer id) {
+    public ResponseEntity<Void> delete(@PathVariable Integer id) {
         inventoryService.deleteInventory(id);
+        return ResponseEntity.noContent().build();
     }
 }

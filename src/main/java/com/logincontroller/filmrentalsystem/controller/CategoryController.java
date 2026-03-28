@@ -6,6 +6,7 @@ import com.logincontroller.filmrentalsystem.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -20,14 +21,14 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Integer id) {
-        return ResponseEntity.ok(categoryService.getCategoryById(id));
-    }
-
     @GetMapping("/search")
     public ResponseEntity<CategoryDTO> getCategoryByName(@RequestParam String name) {
         return ResponseEntity.ok(categoryService.getCategoryByName(name));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Byte id) {
+        return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
 
     @PostMapping
@@ -36,7 +37,7 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Integer id,
+    public ResponseEntity<CategoryDTO> updateCategory(@PathVariable Byte id,
                                                       @RequestBody Category category) {
         Category existing = categoryService.getEntityById(id);
         existing.setName(category.getName());
@@ -44,7 +45,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteCategory(@PathVariable Byte id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.ok("Category deleted successfully");
     }

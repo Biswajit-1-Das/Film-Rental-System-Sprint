@@ -23,7 +23,7 @@ public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "store_id")
-    private Integer storeId;
+    private Byte storeId;
 
     // The manager of this store — references the Staff table
     @ManyToOne(fetch = FetchType.LAZY)

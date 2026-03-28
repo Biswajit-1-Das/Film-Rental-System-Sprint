@@ -10,7 +10,7 @@ public class Film_Text {
 
     @Id
     @Column(name = "film_id")
-    private Integer filmId;
+    private Short filmId;
 
     @Column(name = "title", nullable = false, length = 255)
     private String title;

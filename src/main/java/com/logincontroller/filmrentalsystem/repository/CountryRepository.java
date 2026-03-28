@@ -3,11 +3,12 @@ package com.logincontroller.filmrentalsystem.repository;
 import com.logincontroller.filmrentalsystem.model.Country;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CountryRepository extends JpaRepository<Country, Integer> {
+public interface CountryRepository extends JpaRepository<Country, Short> {
 
     List<Country> findAllByOrderByCountryAsc();
 

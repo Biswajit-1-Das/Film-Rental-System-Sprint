@@ -1,68 +1,77 @@
 package com.logincontroller.filmrentalsystem.controller;
 
+import com.logincontroller.filmrentalsystem.dto.FilmResponseDTO;
+import com.logincontroller.filmrentalsystem.dto.RentalResponseDTO;
 import com.logincontroller.filmrentalsystem.model.Rental;
 import com.logincontroller.filmrentalsystem.service.RentalService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/rentals")
-public class
-RentalController {
+@RequestMapping("/api/rental")
+@RequiredArgsConstructor
+public class RentalController {
 
-    @Autowired
-    private RentalService rentalService;
+    private final RentalService rentalService;
 
-    // ✅ CREATE
-    @PostMapping
-    public Rental createRental(@RequestParam Integer customerId,
-                               @RequestParam Integer staffId,
-                               @RequestParam Integer inventoryId,
-                               @RequestBody Rental rental) {
-
-        return rentalService.createRental(customerId, staffId, inventoryId, rental);
+    @PostMapping("/add")
+    public ResponseEntity<RentalResponseDTO> addRental(
+            @RequestParam Short customerId,
+            @RequestParam Byte staffId,
+            @RequestParam Integer inventoryId,
+            @RequestBody(required = false) Rental rental) {
+        Rental body = rental != null ? rental : Rental.builder().build();
+        return ResponseEntity.ok(rentalService.createRental(customerId, staffId, inventoryId, body));
     }
 
-    // ✅ GET BY ID
+    @GetMapping("/customer/{id}")
+    public ResponseEntity<List<RentalResponseDTO>> byCustomer(@PathVariable Short id) {
+        return ResponseEntity.ok(rentalService.getRentalsByCustomer(id));
+    }
+
+    @GetMapping("/toptenfilms")
+    public ResponseEntity<List<FilmResponseDTO>> topTenFilms() {
+        return ResponseEntity.ok(rentalService.getTopTenFilmsByRentalCount());
+    }
+
+    @GetMapping("/toptenfilms/store/{id}")
+    public ResponseEntity<List<FilmResponseDTO>> topTenFilmsForStore(@PathVariable Byte id) {
+        return ResponseEntity.ok(rentalService.getTopTenFilmsByRentalCountForStore(id));
+    }
+
+    @GetMapping("/due/store/{id}")
+    public ResponseEntity<List<RentalResponseDTO>> dueByStore(@PathVariable Byte id) {
+        return ResponseEntity.ok(rentalService.getDueRentalsByStore(id));
+    }
+
+    @PutMapping("/update/returndate/{id}")
+    public ResponseEntity<RentalResponseDTO> updateReturnDate(
+            @PathVariable Integer id,
+            @RequestParam LocalDateTime returnDate) {
+        return ResponseEntity.ok(rentalService.updateReturnDate(id, returnDate));
+    }
+
     @GetMapping("/{id}")
-    public Rental getRentalById(@PathVariable Integer id) {
-        return rentalService.getRentalById(id);
+    public ResponseEntity<RentalResponseDTO> getById(@PathVariable Integer id) {
+        return ResponseEntity.ok(rentalService.getRentalById(id));
     }
 
-    // ✅ GET ALL
     @GetMapping
-    public List<Rental> getAllRentals() {
-        return rentalService.getAllRentals();
+    public ResponseEntity<List<RentalResponseDTO>> getAll() {
+        return ResponseEntity.ok(rentalService.getAllRentals());
     }
 
-    // ✅ GET BY CUSTOMER
-    @GetMapping("/customer/{customerId}")
-    public List<Rental> getByCustomer(@PathVariable Integer customerId) {
-        return rentalService.getRentalsByCustomer(customerId);
-    }
-
-    // ✅ GET BY STAFF
-    @GetMapping("/staff/{staffId}")
-    public List<Rental> getByStaff(@PathVariable Integer staffId) {
-        return rentalService.getRentalsByStaff(staffId);
-    }
-
-    // ✅ GET BY INVENTORY
-    @GetMapping("/inventory/{inventoryId}")
-    public List<Rental> getByInventory(@PathVariable Integer inventoryId) {
-        return rentalService.getRentalsByInventory(inventoryId);
-    }
-
-    // ✅ UPDATE
     @PutMapping("/{id}")
-    public Rental updateRental(@PathVariable Integer id,
-                               @RequestParam Integer customerId,
-                               @RequestParam Integer staffId,
-                               @RequestParam Integer inventoryId,
-                               @RequestBody Rental rental) {
-
-        return rentalService.updateRental(id, rental, customerId, staffId, inventoryId);
+    public ResponseEntity<RentalResponseDTO> updateRental(
+            @PathVariable Integer id,
+            @RequestParam Short customerId,
+            @RequestParam Byte staffId,
+            @RequestParam Integer inventoryId,
+            @RequestBody Rental rental) {
+        return ResponseEntity.ok(rentalService.updateRental(id, rental, customerId, staffId, inventoryId));
     }
 }

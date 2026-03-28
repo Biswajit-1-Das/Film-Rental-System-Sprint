@@ -5,6 +5,8 @@ import com.logincontroller.filmrentalsystem.model.Category;
 import com.logincontroller.filmrentalsystem.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,17 +21,17 @@ public class CategoryService {
         dto.setCategoryId(category.getCategoryId());
         dto.setName(category.getName());
         dto.setLastUpdate(category.getLastUpdate());
-        if (category.getFilms() != null) {
+        if (category.getFilmCategories() != null) {
             dto.setFilmTitles(
-                    category.getFilms().stream()
-                            .map(film -> film.getTitle())
+                    category.getFilmCategories().stream()
+                            .map(fc -> fc.getFilm().getTitle())
                             .collect(Collectors.toList())
             );
         }
         return dto;
     }
 
-    public Category getEntityById(Integer id) {
+    public Category getEntityById(Byte id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
     }
@@ -41,10 +43,12 @@ public class CategoryService {
                 .collect(Collectors.toList());
     }
 
-    public CategoryDTO getCategoryById(Integer id) {
+    @Transactional(readOnly = true)
+    public CategoryDTO getCategoryById(Byte id) {
         return toDTO(getEntityById(id));
     }
 
+    @Transactional(readOnly = true)
     public CategoryDTO getCategoryByName(String name) {
         Category category = categoryRepository.findByNameIgnoreCase(name)
                 .orElseThrow(() -> new RuntimeException("Category not found: " + name));
@@ -55,7 +59,7 @@ public class CategoryService {
         return toDTO(categoryRepository.save(category));
     }
 
-    public void deleteCategory(Integer id) {
+    public void deleteCategory(Byte id) {
         categoryRepository.deleteById(id);
     }
 }

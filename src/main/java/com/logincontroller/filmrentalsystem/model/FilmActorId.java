@@ -1,0 +1,22 @@
+package com.logincontroller.filmrentalsystem.model;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@Embeddable
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class FilmActorId implements Serializable {
+
+    @Column(name = "actor_id")
+    private Short actorId;
+
+    @Column(name = "film_id")
+    private Short filmId;
+}

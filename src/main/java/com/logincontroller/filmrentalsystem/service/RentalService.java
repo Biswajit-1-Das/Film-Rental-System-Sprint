@@ -1,31 +1,58 @@
 package com.logincontroller.filmrentalsystem.service;
 
+import com.logincontroller.filmrentalsystem.dto.FilmResponseDTO;
+import com.logincontroller.filmrentalsystem.dto.RentalResponseDTO;
 import com.logincontroller.filmrentalsystem.model.*;
-import com.logincontroller.filmrentalsystem.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.logincontroller.filmrentalsystem.repository.CustomerRepository;
+import com.logincontroller.filmrentalsystem.repository.InventoryRepository;
+import com.logincontroller.filmrentalsystem.repository.RentalRepository;
+import com.logincontroller.filmrentalsystem.repository.StaffRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class RentalService {
 
-    @Autowired
-    private RentalRepository rentalRepository;
+    private final RentalRepository rentalRepository;
+    private final CustomerRepository customerRepository;
+    private final StaffRepository staffRepository;
+    private final InventoryRepository inventoryRepository;
+    private final FilmService filmService;
 
-    @Autowired
-    private CustomerRepository customerRepository;
+    private RentalResponseDTO toResponseDTO(Rental r) {
+        RentalResponseDTO dto = new RentalResponseDTO();
+        dto.setRentalId(r.getRentalId());
+        dto.setRentalDate(r.getRentalDate());
+        dto.setReturnDate(r.getReturnDate());
+        dto.setLastUpdate(r.getLastUpdate());
+        if (r.getInventory() != null) {
+            dto.setInventoryId(r.getInventory().getInventoryId());
+            if (r.getInventory().getFilm() != null) {
+                dto.setFilmId(r.getInventory().getFilm().getFilmId());
+                dto.setFilmTitle(r.getInventory().getFilm().getTitle());
+            }
+        }
+        if (r.getCustomer() != null) {
+            dto.setCustomerId(r.getCustomer().getCustomerId());
+            dto.setCustomerName(r.getCustomer().getFirstName() + " " + r.getCustomer().getLastName());
+        }
+        if (r.getStaff() != null) {
+            dto.setStaffId(r.getStaff().getStaffId());
+            dto.setStaffName(r.getStaff().getFirstName() + " " + r.getStaff().getLastName());
+        }
+        return dto;
+    }
 
-    @Autowired
-    private StaffRepository staffRepository;
-
-    @Autowired
-    private InventoryRepository inventoryRepository;
-
-    // ✅ CREATE
-    public Rental createRental(Integer customerId, Integer staffId,
-                               Integer inventoryId, Rental rental) {
+    @Transactional
+    public RentalResponseDTO createRental(Short customerId, Byte staffId,
+                                          Integer inventoryId, Rental rental) {
 
         Customer customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
@@ -43,38 +70,87 @@ public class RentalService {
         rental.setRentalDate(LocalDateTime.now());
         rental.setLastUpdate(LocalDateTime.now());
 
-        return rentalRepository.save(rental);
+        return toResponseDTO(rentalRepository.save(rental));
     }
 
-    // ✅ GET BY ID
-    public Rental getRentalById(Integer id) {
+    @Transactional(readOnly = true)
+    public RentalResponseDTO getRentalById(Integer id) {
+        return toResponseDTO(getEntityById(id));
+    }
+
+    public Rental getEntityById(Integer id) {
         return rentalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rental not found with id: " + id));
     }
 
-    // ✅ GET ALL
-    public List<Rental> getAllRentals() {
-        return rentalRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<RentalResponseDTO> getAllRentals() {
+        return rentalRepository.findAll().stream().map(this::toResponseDTO).collect(Collectors.toList());
     }
 
-    // ✅ GET BY CUSTOMER
-    public List<Rental> getRentalsByCustomer(Integer customerId) {
-        return rentalRepository.findByCustomerCustomerId(customerId);
+    @Transactional(readOnly = true)
+    public List<RentalResponseDTO> getRentalsByCustomer(Short customerId) {
+        return rentalRepository.findByCustomerCustomerId(customerId)
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    // ✅ GET BY STAFF
-    public List<Rental> getRentalsByStaff(Integer staffId) {
-        return rentalRepository.findByStaffStaffId(staffId);
+    @Transactional(readOnly = true)
+    public List<RentalResponseDTO> getRentalsByStaff(Byte staffId) {
+        return rentalRepository.findByStaffStaffId(staffId)
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    // ✅ GET BY INVENTORY
-    public List<Rental> getRentalsByInventory(Integer inventoryId) {
-        return rentalRepository.findByInventoryInventoryId(inventoryId);
+    @Transactional(readOnly = true)
+    public List<RentalResponseDTO> getRentalsByInventory(Integer inventoryId) {
+        return rentalRepository.findByInventoryInventoryId(inventoryId)
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    // ✅ UPDATE
-    public Rental updateRental(Integer id, Rental updatedRental,
-                               Integer customerId, Integer staffId, Integer inventoryId) {
+    @Transactional(readOnly = true)
+    public List<FilmResponseDTO> getTopTenFilmsByRentalCount() {
+        List<Short> ids = rentalRepository.findTopTenFilmIdsByRentalCount();
+        List<FilmResponseDTO> out = new ArrayList<>();
+        for (Short id : ids) {
+            out.add(filmService.getFilmById(id));
+        }
+        return out;
+    }
+
+    @Transactional(readOnly = true)
+    public List<FilmResponseDTO> getTopTenFilmsByRentalCountForStore(Byte storeId) {
+        List<Short> ids = rentalRepository.findTopTenFilmIdsByRentalCountForStore(storeId);
+        List<FilmResponseDTO> out = new ArrayList<>();
+        for (Short id : ids) {
+            out.add(filmService.getFilmById(id));
+        }
+        return out;
+    }
+
+    @Transactional(readOnly = true)
+    public List<RentalResponseDTO> getDueRentalsByStore(Byte storeId) {
+        return rentalRepository.findDueRentalsByStoreId(storeId)
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public RentalResponseDTO updateReturnDate(Integer rentalId, LocalDateTime returnDate) {
+        Rental existing = getEntityById(rentalId);
+        existing.setReturnDate(returnDate);
+        existing.setLastUpdate(LocalDateTime.now());
+        return toResponseDTO(rentalRepository.save(existing));
+    }
+
+    @Transactional
+    public RentalResponseDTO updateRental(Integer id, Rental updatedRental,
+                                            Short customerId, Byte staffId, Integer inventoryId) {
 
         Rental existing = rentalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Rental not found"));
@@ -95,6 +171,6 @@ public class RentalService {
         existing.setReturnDate(updatedRental.getReturnDate());
         existing.setLastUpdate(LocalDateTime.now());
 
-        return rentalRepository.save(existing);
+        return toResponseDTO(rentalRepository.save(existing));
     }
 }

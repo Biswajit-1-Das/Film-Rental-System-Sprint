@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -24,9 +24,9 @@ public class Actor {
     private String lastName;
 
     @Column(name = "last_update")
-    private Timestamp lastUpdate;
+    private LocalDateTime lastUpdate;
 
+    @OneToMany(mappedBy = "actor")
     @JsonIgnore
-    @ManyToMany(mappedBy = "actors")
-    private List<Film> films;
+    private List<FilmActor> filmActors = new java.util.ArrayList<>();
 }

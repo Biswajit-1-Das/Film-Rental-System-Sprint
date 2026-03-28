@@ -1,67 +1,90 @@
 package com.logincontroller.filmrentalsystem.controller;
 
+import com.logincontroller.filmrentalsystem.dto.DateRevenueDTO;
+import com.logincontroller.filmrentalsystem.dto.FilmRevenueDTO;
+import com.logincontroller.filmrentalsystem.dto.PaymentsResponseDTO;
 import com.logincontroller.filmrentalsystem.model.Payments;
 import com.logincontroller.filmrentalsystem.service.PaymentsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/payments")
+@RequestMapping("/api/payment")
+@RequiredArgsConstructor
 public class PaymentController {
 
-    @Autowired
-    private PaymentsService paymentsService;
+    private final PaymentsService paymentsService;
 
-    // ✅ CREATE
-    @PostMapping
-    public Payments createPayment(@RequestParam Integer customerId,
-                                  @RequestParam Integer staffId,
-                                  @RequestParam Integer rentalId,
-                                  @RequestBody Payments payment) {
-
-        return paymentsService.createPayment(customerId, staffId, rentalId, payment);
+    @PostMapping("/add")
+    public ResponseEntity<PaymentsResponseDTO> addPayment(
+            @RequestParam Short customerId,
+            @RequestParam Byte staffId,
+            @RequestParam Integer rentalId,
+            @RequestBody Payments payment) {
+        return ResponseEntity.ok(paymentsService.createPayment(customerId, staffId, rentalId, payment));
     }
 
-    // ✅ GET BY ID
+    @GetMapping("/revenue/datewise")
+    public ResponseEntity<List<DateRevenueDTO>> revenueDatewise() {
+        return ResponseEntity.ok(paymentsService.revenueByDate());
+    }
+
+    @GetMapping("/revenue/datewise/store/{id}")
+    public ResponseEntity<List<DateRevenueDTO>> revenueDatewiseStore(@PathVariable Byte id) {
+        return ResponseEntity.ok(paymentsService.revenueByDateForStore(id));
+    }
+
+    @GetMapping({"/revenue/filmwise", "/revenue/filmwise/"})
+    public ResponseEntity<List<FilmRevenueDTO>> revenueFilmwise() {
+        return ResponseEntity.ok(paymentsService.revenueByFilm());
+    }
+
+    @GetMapping("/revenue/film/{id}")
+    public ResponseEntity<BigDecimal> revenueForFilm(@PathVariable Short id) {
+        return ResponseEntity.ok(paymentsService.revenueTotalForFilm(id));
+    }
+
+    @GetMapping("/revenue/films/store/{id}")
+    public ResponseEntity<List<FilmRevenueDTO>> revenueFilmsForStore(@PathVariable Byte id) {
+        return ResponseEntity.ok(paymentsService.revenueByFilmsForStore(id));
+    }
+
     @GetMapping("/{id}")
-    public Payments getPaymentById(@PathVariable Integer id) {
-        return paymentsService.getPaymentById(id);
+    public ResponseEntity<PaymentsResponseDTO> getById(@PathVariable Short id) {
+        return ResponseEntity.ok(paymentsService.getPaymentById(id));
     }
 
-    // ✅ GET ALL
     @GetMapping
-    public List<Payments> getAllPayments() {
-        return paymentsService.getAllPayments();
+    public ResponseEntity<List<PaymentsResponseDTO>> getAll() {
+        return ResponseEntity.ok(paymentsService.getAllPayments());
     }
 
-    // ✅ GET BY CUSTOMER
     @GetMapping("/customer/{customerId}")
-    public List<Payments> getByCustomer(@PathVariable Integer customerId) {
-        return paymentsService.getPaymentsByCustomer(customerId);
+    public ResponseEntity<List<PaymentsResponseDTO>> byCustomer(@PathVariable Short customerId) {
+        return ResponseEntity.ok(paymentsService.getPaymentsByCustomer(customerId));
     }
 
-    // ✅ GET BY STAFF
     @GetMapping("/staff/{staffId}")
-    public List<Payments> getByStaff(@PathVariable Integer staffId) {
-        return paymentsService.getPaymentsByStaff(staffId);
+    public ResponseEntity<List<PaymentsResponseDTO>> byStaff(@PathVariable Byte staffId) {
+        return ResponseEntity.ok(paymentsService.getPaymentsByStaff(staffId));
     }
 
-    // ✅ GET BY RENTAL
     @GetMapping("/rental/{rentalId}")
-    public List<Payments> getByRental(@PathVariable Integer rentalId) {
-        return paymentsService.getPaymentsByRental(rentalId);
+    public ResponseEntity<List<PaymentsResponseDTO>> byRental(@PathVariable Integer rentalId) {
+        return ResponseEntity.ok(paymentsService.getPaymentsByRental(rentalId));
     }
 
-    // ✅ UPDATE
     @PutMapping("/{id}")
-    public Payments updatePayment(@PathVariable Integer id,
-                                  @RequestParam Integer customerId,
-                                  @RequestParam Integer staffId,
-                                  @RequestParam Integer rentalId,
-                                  @RequestBody Payments payment) {
-
-        return paymentsService.updatePayment(id, payment, customerId, staffId, rentalId);
+    public ResponseEntity<PaymentsResponseDTO> updatePayment(
+            @PathVariable Short id,
+            @RequestParam Short customerId,
+            @RequestParam Byte staffId,
+            @RequestParam Integer rentalId,
+            @RequestBody Payments payment) {
+        return ResponseEntity.ok(paymentsService.updatePayment(id, payment, customerId, staffId, rentalId));
     }
 }

@@ -3,7 +3,7 @@ package com.logincontroller.filmrentalsystem.model;
 import lombok.*;
 import jakarta.persistence.*;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "city")
@@ -15,7 +15,7 @@ public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "city_id")
-    private Integer cityId;
+    private Short cityId;
 
     @Column(name = "city", nullable = false)
     private String city;
@@ -25,7 +25,7 @@ public class City {
     private Country country;
 
     @Column(name = "last_update", nullable = false)
-    private Timestamp lastUpdate;
+    private LocalDateTime lastUpdate;
 
 
 }

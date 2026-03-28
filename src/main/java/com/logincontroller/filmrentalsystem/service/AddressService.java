@@ -5,6 +5,7 @@ import com.logincontroller.filmrentalsystem.model.Address;
 import com.logincontroller.filmrentalsystem.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,6 @@ public class AddressService {
         dto.setPhone(address.getPhone());
         dto.setLocation(address.getLocation());
         dto.setLastUpdate(address.getLastUpdate());
-        // flatten city and pull country up one level
         if (address.getCity() != null) {
             dto.setCityId(address.getCity().getCityId());
             dto.setCityName(address.getCity().getCity());
@@ -36,7 +36,7 @@ public class AddressService {
         return dto;
     }
 
-    public Address getEntityById(Integer id) {
+    public Address getEntityById(Short id) {
         return addressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
     }
@@ -48,11 +48,11 @@ public class AddressService {
                 .collect(Collectors.toList());
     }
 
-    public AddressDTO getAddressById(Integer id) {
+    public AddressDTO getAddressById(Short id) {
         return toDTO(getEntityById(id));
     }
 
-    public List<AddressDTO> getAddressesByCity(Integer cityId) {
+    public List<AddressDTO> getAddressesByCity(Short cityId) {
         return addressRepository.findByCityCityId(cityId)
                 .stream()
                 .map(this::toDTO)
@@ -70,7 +70,7 @@ public class AddressService {
         return toDTO(addressRepository.save(address));
     }
 
-    public void deleteAddress(Integer id) {
+    public void deleteAddress(Short id) {
         addressRepository.deleteById(id);
     }
 }

@@ -2,16 +2,17 @@ package com.logincontroller.filmrentalsystem.repository;
 
 import com.logincontroller.filmrentalsystem.model.City;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 import java.util.Optional;
 
-public interface CityRepository extends JpaRepository<City, Integer> {
+@Repository
+public interface CityRepository extends JpaRepository<City, Short> {
 
     Optional<City> findByCity(String city);
 
-    // ✅ Correct — navigates the @ManyToOne Country relationship
-    List<City> findByCountryCountryId(int countryId);
+    List<City> findByCountryCountryId(Short countryId);
 
-    // ✅ Search cities by country name
-    List<City> findByCountryCountryIgnoreCase(String countryName);
+    List<City> findByCountry_CountryIgnoreCase(String countryName);
 }
