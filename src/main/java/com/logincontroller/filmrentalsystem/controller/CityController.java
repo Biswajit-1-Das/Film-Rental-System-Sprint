@@ -7,6 +7,7 @@ import com.logincontroller.filmrentalsystem.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -22,27 +23,35 @@ public class CityController {
         return ResponseEntity.ok(cityService.getAllCities());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CityDTO> getCityById(@PathVariable Integer id) {
-        return ResponseEntity.ok(cityService.getCityById(id));
+    @GetMapping("/search/name")
+    public ResponseEntity<CityDTO> getCityByCityName(@RequestParam String city) {
+        return ResponseEntity.ok(cityService.getCityByCityName(city));
+    }
+
+    @GetMapping("/search/country")
+    public ResponseEntity<List<CityDTO>> getCitiesByCountryName(@RequestParam String country) {
+        return ResponseEntity.ok(cityService.getCitiesByCountryName(country));
     }
 
     @GetMapping("/country/{countryId}")
-    public ResponseEntity<List<CityDTO>> getCitiesByCountry(
-            @PathVariable Integer countryId) {
+    public ResponseEntity<List<CityDTO>> getCitiesByCountry(@PathVariable Short countryId) {
         return ResponseEntity.ok(cityService.getCitiesByCountry(countryId));
     }
 
-    @PostMapping
-    public ResponseEntity<CityDTO> createCity(@PathVariable Integer countryId,
+    @GetMapping("/{id}")
+    public ResponseEntity<CityDTO> getCityById(@PathVariable Short id) {
+        return ResponseEntity.ok(cityService.getCityById(id));
+    }
+
+    @PostMapping("/country/{countryId}")
+    public ResponseEntity<CityDTO> createCity(@PathVariable Short countryId,
                                               @RequestBody City city) {
-        // resolve country entity and assign before saving
         city.setCountry(countryService.getEntityById(countryId));
         return ResponseEntity.ok(cityService.saveCity(city));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CityDTO> updateCity(@PathVariable Integer id,
+    public ResponseEntity<CityDTO> updateCity(@PathVariable Short id,
                                               @RequestBody City city) {
         City existing = cityService.getEntityById(id);
         existing.setCity(city.getCity());
@@ -55,7 +64,7 @@ public class CityController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCity(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteCity(@PathVariable Short id) {
         cityService.deleteCity(id);
         return ResponseEntity.ok("City deleted successfully");
     }

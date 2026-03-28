@@ -18,7 +18,7 @@ public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")
-    private int customerId;
+    private Short customerId;
 
     // Owning Side: Customer belongs to a Store
     @ManyToOne(fetch = FetchType.LAZY)
@@ -38,7 +38,7 @@ public class Customer {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    private int active;
+    private Byte active;
 
     @Column(name = "create_date")
     private LocalDateTime createDate;

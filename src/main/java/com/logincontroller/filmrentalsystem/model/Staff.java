@@ -13,7 +13,7 @@ public class Staff {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "staff_id")
-    private Integer staffId;
+    private Byte staffId;
 
     @Column(name = "first_name", nullable = false, length = 45)
     private String firstName;
@@ -30,7 +30,7 @@ public class Staff {
     private String email;
 
     @Column(name = "active", nullable = false)
-    private Boolean active;
+    private Byte active;
 
     @Column(name = "username", nullable = false, length = 16)
     private String username;

@@ -6,6 +6,7 @@ import com.logincontroller.filmrentalsystem.service.LanguageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -20,9 +21,30 @@ public class LanguageController {
         return ResponseEntity.ok(languageService.getAllLanguages());
     }
 
+    /** Static paths must be registered before /{id} so "search" is not parsed as an id. */
+    @GetMapping("/search")
+    public ResponseEntity<LanguageDTO> getLanguageByName(@RequestParam String name) {
+        return ResponseEntity.ok(languageService.getLanguageByName(name));
+    }
+
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> existsByName(@RequestParam String name) {
+        return ResponseEntity.ok(languageService.existsByNameIgnoreCase(name));
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<LanguageDTO> getLanguageById(@PathVariable Integer id) {
+    public ResponseEntity<LanguageDTO> getLanguageById(@PathVariable Byte id) {
         return ResponseEntity.ok(languageService.getLanguageById(id));
+    }
+
+    @GetMapping("/{id}/with-films")
+    public ResponseEntity<LanguageDTO> getLanguageWithFilms(@PathVariable Byte id) {
+        return ResponseEntity.ok(languageService.getLanguageWithFilms(id));
+    }
+
+    @GetMapping("/{id}/film-count")
+    public ResponseEntity<Long> countFilms(@PathVariable Byte id) {
+        return ResponseEntity.ok(languageService.countFilmsByLanguage(id));
     }
 
     @PostMapping
@@ -31,7 +53,7 @@ public class LanguageController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LanguageDTO> updateLanguage(@PathVariable Integer id,
+    public ResponseEntity<LanguageDTO> updateLanguage(@PathVariable Byte id,
                                                       @RequestBody Language language) {
         Language existing = languageService.getEntityById(id);
         existing.setName(language.getName());
@@ -39,7 +61,7 @@ public class LanguageController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteLanguage(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteLanguage(@PathVariable Byte id) {
         languageService.deleteLanguage(id);
         return ResponseEntity.ok("Language deleted successfully");
     }

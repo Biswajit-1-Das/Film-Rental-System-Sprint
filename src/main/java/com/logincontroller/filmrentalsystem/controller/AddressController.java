@@ -7,6 +7,7 @@ import com.logincontroller.filmrentalsystem.service.CityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -22,26 +23,23 @@ public class AddressController {
         return ResponseEntity.ok(addressService.getAllAddresses());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<AddressDTO> getAddressById(@PathVariable Integer id) {
-        return ResponseEntity.ok(addressService.getAddressById(id));
+    @GetMapping("/search")
+    public ResponseEntity<List<AddressDTO>> searchByDistrict(@RequestParam String district) {
+        return ResponseEntity.ok(addressService.searchByDistrict(district));
     }
 
     @GetMapping("/city/{cityId}")
-    public ResponseEntity<List<AddressDTO>> getAddressesByCity(
-            @PathVariable Integer cityId) {
+    public ResponseEntity<List<AddressDTO>> getAddressesByCity(@PathVariable Short cityId) {
         return ResponseEntity.ok(addressService.getAddressesByCity(cityId));
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<AddressDTO>> searchByDistrict(
-            @RequestParam String district) {
-        return ResponseEntity.ok(addressService.searchByDistrict(district));
+    @GetMapping("/{id}")
+    public ResponseEntity<AddressDTO> getAddressById(@PathVariable Short id) {
+        return ResponseEntity.ok(addressService.getAddressById(id));
     }
 
     @PostMapping
     public ResponseEntity<AddressDTO> createAddress(@RequestBody Address address) {
-        // resolve city entity from the cityId inside the address object
         if (address.getCity() != null && address.getCity().getCityId() != null) {
             address.setCity(cityService.getEntityById(address.getCity().getCityId()));
         }
@@ -49,7 +47,7 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AddressDTO> updateAddress(@PathVariable Integer id,
+    public ResponseEntity<AddressDTO> updateAddress(@PathVariable Short id,
                                                     @RequestBody Address address) {
         Address existing = addressService.getEntityById(id);
         existing.setAddress(address.getAddress());
@@ -65,7 +63,7 @@ public class AddressController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAddress(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteAddress(@PathVariable Short id) {
         addressService.deleteAddress(id);
         return ResponseEntity.ok("Address deleted successfully");
     }

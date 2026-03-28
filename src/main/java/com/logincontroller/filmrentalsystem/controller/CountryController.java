@@ -6,6 +6,7 @@ import com.logincontroller.filmrentalsystem.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -20,14 +21,19 @@ public class CountryController {
         return ResponseEntity.ok(countryService.getAllCountries());
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<CountryDTO> getCountryById(@PathVariable Integer id) {
-        return ResponseEntity.ok(countryService.getCountryById(id));
-    }
-
     @GetMapping("/search")
     public ResponseEntity<CountryDTO> getCountryByName(@RequestParam String name) {
         return ResponseEntity.ok(countryService.getCountryByName(name));
+    }
+
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> countryExists(@RequestParam String name) {
+        return ResponseEntity.ok(countryService.countryExistsIgnoreCase(name));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CountryDTO> getCountryById(@PathVariable Short id) {
+        return ResponseEntity.ok(countryService.getCountryById(id));
     }
 
     @PostMapping
@@ -36,7 +42,7 @@ public class CountryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CountryDTO> updateCountry(@PathVariable Integer id,
+    public ResponseEntity<CountryDTO> updateCountry(@PathVariable Short id,
                                                     @RequestBody Country country) {
         Country existing = countryService.getEntityById(id);
         existing.setCountry(country.getCountry());
@@ -44,7 +50,7 @@ public class CountryController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCountry(@PathVariable Integer id) {
+    public ResponseEntity<String> deleteCountry(@PathVariable Short id) {
         countryService.deleteCountry(id);
         return ResponseEntity.ok("Country deleted successfully");
     }

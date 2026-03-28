@@ -9,27 +9,15 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface LanguageRepository extends JpaRepository<Language, Integer> {
+public interface LanguageRepository extends JpaRepository<Language, Byte> {
 
-    /**
-     * Finding language by name (case-insensitive)
-     */
     Optional<Language> findByNameIgnoreCase(String name);
 
-    /**
-     * Checking if language exists by name
-     */
     boolean existsByNameIgnoreCase(String name);
 
-    /**
-     * Finding language with all films
-     */
     @Query("SELECT DISTINCT l FROM Language l LEFT JOIN FETCH l.films WHERE l.languageId = :id")
-    Optional<Language> findByIdWithFilms(@Param("id") Integer id);
+    Optional<Language> findByIdWithFilms(@Param("id") Byte id);
 
-    /**
-     * Counting films using this language
-     */
     @Query("SELECT COUNT(f) FROM Film f WHERE f.language.languageId = :languageId")
-    Long countFilmsByLanguage(@Param("languageId") Integer languageId);
+    Long countFilmsByLanguage(@Param("languageId") Byte languageId);
 }

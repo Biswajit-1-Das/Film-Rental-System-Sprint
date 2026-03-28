@@ -5,6 +5,7 @@ import com.logincontroller.filmrentalsystem.model.City;
 import com.logincontroller.filmrentalsystem.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,7 +20,6 @@ public class CityService {
         dto.setCityId(city.getCityId());
         dto.setCity(city.getCity());
         dto.setLastUpdate(city.getLastUpdate());
-        // flatten country into just id and name
         if (city.getCountry() != null) {
             dto.setCountryId(city.getCountry().getCountryId());
             dto.setCountryName(city.getCountry().getCountry());
@@ -27,7 +27,7 @@ public class CityService {
         return dto;
     }
 
-    public City getEntityById(Integer id) {
+    public City getEntityById(Short id) {
         return cityRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("City not found with id: " + id));
     }
@@ -39,12 +39,25 @@ public class CityService {
                 .collect(Collectors.toList());
     }
 
-    public CityDTO getCityById(Integer id) {
+    public CityDTO getCityById(Short id) {
         return toDTO(getEntityById(id));
     }
 
-    public List<CityDTO> getCitiesByCountry(Integer countryId) {
+    public List<CityDTO> getCitiesByCountry(Short countryId) {
         return cityRepository.findByCountryCountryId(countryId)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    public CityDTO getCityByCityName(String cityName) {
+        City city = cityRepository.findByCity(cityName)
+                .orElseThrow(() -> new RuntimeException("City not found: " + cityName));
+        return toDTO(city);
+    }
+
+    public List<CityDTO> getCitiesByCountryName(String countryName) {
+        return cityRepository.findByCountry_CountryIgnoreCase(countryName)
                 .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
@@ -54,7 +67,7 @@ public class CityService {
         return toDTO(cityRepository.save(city));
     }
 
-    public void deleteCity(Integer id) {
+    public void deleteCity(Short id) {
         cityRepository.deleteById(id);
     }
 }

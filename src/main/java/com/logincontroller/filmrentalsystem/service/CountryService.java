@@ -6,6 +6,7 @@ import com.logincontroller.filmrentalsystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class CountryService {
         return dto;
     }
 
-    public Country getEntityById(Integer id) {
+    public Country getEntityById(Short id) {
         return countryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Country not found with id: " + id));
     }
@@ -35,7 +36,7 @@ public class CountryService {
                 .collect(Collectors.toList());
     }
 
-    public CountryDTO getCountryById(Integer id) {
+    public CountryDTO getCountryById(Short id) {
         return toDTO(getEntityById(id));
     }
 
@@ -43,6 +44,10 @@ public class CountryService {
         Country country = countryRepository.findByCountryIgnoreCase(name)
                 .orElseThrow(() -> new RuntimeException("Country not found: " + name));
         return toDTO(country);
+    }
+
+    public boolean countryExistsIgnoreCase(String country) {
+        return countryRepository.existsByCountryIgnoreCase(country);
     }
 
     @Transactional
@@ -61,7 +66,7 @@ public class CountryService {
         return toDTO(country);
     }
 
-    public void deleteCountry(Integer id) {
+    public void deleteCountry(Short id) {
         countryRepository.deleteById(id);
     }
 }

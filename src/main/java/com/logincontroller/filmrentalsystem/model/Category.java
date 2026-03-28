@@ -19,7 +19,7 @@ public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "category_id")
-    private Integer categoryId; // Maps to TINYINT
+    private Byte categoryId;
 
     @Column(name = "name", length = 25)
     private String name;
@@ -27,7 +27,7 @@ public class Category {
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
-    @ManyToMany(mappedBy = "categories")
+    @OneToMany(mappedBy = "category")
     @JsonIgnore
-    private List<Film> films = new ArrayList<>();
+    private List<FilmCategory> filmCategories = new ArrayList<>();
 }
