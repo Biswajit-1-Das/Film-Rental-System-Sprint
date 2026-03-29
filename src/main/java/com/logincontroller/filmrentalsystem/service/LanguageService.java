@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,11 +32,18 @@ public class LanguageService {
                 .orElseThrow(() -> new RuntimeException("Language not found with id: " + id));
     }
 
-    public List<LanguageDTO> getAllLanguages() {
-        return languageRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+    public HashSet<LanguageDTO> getAllLanguages() {
+//        return languageRepository.findAll()
+//                .stream()
+//                .map(this::toDTO)
+//                .collect(Collectors.toList());
+        List<Language> lang = languageRepository.findAll();
+        HashSet<LanguageDTO> language = new HashSet<>();
+        for(Language l : lang)
+        {
+            language.add(toDTO(l));
+        }
+        return language;
     }
 
     public LanguageDTO getLanguageById(Byte id) {

@@ -87,29 +87,38 @@ public class RentalService {
     public List<RentalResponseDTO> getAllRentals() {
         return rentalRepository.findAll().stream().map(this::toResponseDTO).collect(Collectors.toList());
     }
-
     @Transactional(readOnly = true)
     public List<RentalResponseDTO> getRentalsByCustomer(Short customerId) {
-        return rentalRepository.findByCustomerCustomerId(customerId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
-    }
+        List<Rental> rentals = rentalRepository.findByCustomerCustomerId(customerId);
+        List<RentalResponseDTO> result = new ArrayList<>();
 
+        for (Rental rental : rentals) {
+            result.add(toResponseDTO(rental));
+        }
+
+        return result;
+    }
     @Transactional(readOnly = true)
     public List<RentalResponseDTO> getRentalsByStaff(Byte staffId) {
-        return rentalRepository.findByStaffStaffId(staffId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
-    }
+        List<Rental> rentals = rentalRepository.findByStaffStaffId(staffId);
+        List<RentalResponseDTO> result = new ArrayList<>();
 
+        for (Rental rental : rentals) {
+            result.add(toResponseDTO(rental));
+        }
+
+        return result;
+    }
     @Transactional(readOnly = true)
     public List<RentalResponseDTO> getRentalsByInventory(Integer inventoryId) {
-        return rentalRepository.findByInventoryInventoryId(inventoryId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Rental> rentals = rentalRepository.findByInventoryInventoryId(inventoryId);
+        List<RentalResponseDTO> result = new ArrayList<>();
+
+        for (Rental rental : rentals) {
+            result.add(toResponseDTO(rental));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
@@ -134,10 +143,14 @@ public class RentalService {
 
     @Transactional(readOnly = true)
     public List<RentalResponseDTO> getDueRentalsByStore(Byte storeId) {
-        return rentalRepository.findDueRentalsByStoreId(storeId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Rental> rentals = rentalRepository.findDueRentalsByStoreId(storeId);
+        List<RentalResponseDTO> result = new ArrayList<>();
+
+        for (Rental rental : rentals) {
+            result.add(toResponseDTO(rental));
+        }
+
+        return result;
     }
 
     @Transactional

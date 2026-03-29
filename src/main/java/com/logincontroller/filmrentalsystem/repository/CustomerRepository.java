@@ -16,10 +16,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Short> {
 
     List<Customer> findByActive(Byte active);
 
-    List<Customer> findByFirstNameIgnoreCase(String firstName);
-
-    List<Customer> findByLastNameIgnoreCase(String lastName);
-
     List<Customer> findByLastNameContainingIgnoreCase(String lastName);
 
     List<Customer> findByFirstNameContainingIgnoreCase(String firstName);

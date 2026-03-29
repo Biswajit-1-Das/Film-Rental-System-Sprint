@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,35 +50,67 @@ public class ActorService {
 
     @Transactional(readOnly = true)
     public List<ActorResponseDTO> getAllActors() {
-        return actorRepository.findAll().stream().map(this::toResponseDTO).collect(Collectors.toList());
+//        return actorRepository.findAll().stream().map(this::toResponseDTO).collect(Collectors.toList());
+        List<Actor> actor = actorRepository.findAll();
+        List<ActorResponseDTO> actors = new ArrayList<>();
+        for(Actor atr:actor)
+        {
+            actors.add(toResponseDTO(atr));
+        }
+        return actors;
     }
 
     public List<String> getAllActorNames() {
-        return actorRepository.findAll()
-                .stream()
-                .map(actor -> actor.getFirstName() + " " + actor.getLastName())
-                .collect(Collectors.toList());
+//        return actorRepository.findAll()
+//                .stream()
+//                .map(actor -> actor.getFirstName() + " " + actor.getLastName())
+//                .collect(Collectors.toList());\
+        List<Actor> actor = actorRepository.findAll();
+        List<String> names= new ArrayList<>();
+        for(Actor ar : actor)
+        {
+            names.add(toResponseDTO(ar).getFirstName() + " " + toResponseDTO(ar).getLastName());
+        }
+        return names;
     }
 
-    @Transactional(readOnly = true)
     public ActorResponseDTO getActorById(Short id) {
         return toResponseDTO(getEntityById(id));
     }
 
-    @Transactional(readOnly = true)
+
     public List<ActorResponseDTO> searchByFirstName(String firstName) {
-        return actorRepository.findByFirstNameContainingIgnoreCase(firstName)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+//        return actorRepository.findByFirstNameContainingIgnoreCase(firstName)
+//                .stream()
+//                .map(this::toResponseDTO)
+//                .collect(Collectors.toList());
+        List<Actor> actors = actorRepository.findByFirstNameContainingIgnoreCase(firstName);
+        List<ActorResponseDTO> res = new ArrayList<>();
+        for(Actor ar : actors)
+        {
+            if(firstName.equalsIgnoreCase(toResponseDTO(ar).getFirstName()))
+            {
+                res.add(toResponseDTO(ar));
+            }
+        }
+        return res;
     }
 
-    @Transactional(readOnly = true)
     public List<ActorResponseDTO> searchByLastName(String lastName) {
-        return actorRepository.findByLastNameContainingIgnoreCase(lastName)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+//        return actorRepository.findByLastNameContainingIgnoreCase(lastName)
+//                .stream()
+//                .map(this::toResponseDTO)
+//                .collect(Collectors.toList());
+        List<Actor> actors = actorRepository.findByLastNameContainingIgnoreCase(lastName);
+        List<ActorResponseDTO> res = new ArrayList<>();
+        for(Actor ar : actors)
+        {
+            if(toResponseDTO(ar).getLastName().equalsIgnoreCase(lastName))
+            {
+                res.add(toResponseDTO(ar));
+            }
+        }
+        return res;
     }
 
     @Transactional
@@ -96,12 +129,12 @@ public class ActorService {
         return toResponseDTO(actorRepository.save(existing));
     }
 
-    @Transactional
-    public ActorResponseDTO updateFirstName(Short id, String firstName) {
-        Actor existing = getEntityById(id);
-        existing.setFirstName(firstName);
-        return toResponseDTO(actorRepository.save(existing));
-    }
+//    @Transactional
+//    public ActorResponseDTO updateFirstName(Short id, String firstName) {
+//        Actor existing = getEntityById(id);
+//        existing.setFirstName(firstName);
+//        return toResponseDTO(actorRepository.save(existing));
+//    }
 
     @Transactional(readOnly = true)
     public List<ActorResponseDTO> getTopTenActorsByFilmCount() {
