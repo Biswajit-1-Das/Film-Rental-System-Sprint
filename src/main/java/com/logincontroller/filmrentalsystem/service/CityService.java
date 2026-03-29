@@ -6,6 +6,7 @@ import com.logincontroller.filmrentalsystem.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,21 +34,30 @@ public class CityService {
     }
 
     public List<CityDTO> getAllCities() {
-        return cityRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        List<City> cities = cityRepository.findAll();
+        List<CityDTO> result = new ArrayList<>();
+
+        for (City city : cities) {
+            result.add(toDTO(city));
+        }
+
+        return result;
     }
 
     public CityDTO getCityById(Short id) {
-        return toDTO(getEntityById(id));
+        City city = getEntityById(id);
+        return toDTO(city);
     }
 
     public List<CityDTO> getCitiesByCountry(Short countryId) {
-        return cityRepository.findByCountryCountryId(countryId)
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        List<City> cities = cityRepository.findByCountryCountryId(countryId);
+        List<CityDTO> result = new ArrayList<>();
+
+        for (City city : cities) {
+            result.add(toDTO(city));
+        }
+
+        return result;
     }
 
     public CityDTO getCityByCityName(String cityName) {
@@ -57,10 +67,14 @@ public class CityService {
     }
 
     public List<CityDTO> getCitiesByCountryName(String countryName) {
-        return cityRepository.findByCountry_CountryIgnoreCase(countryName)
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        List<City> cities = cityRepository.findByCountry_CountryIgnoreCase(countryName);
+        List<CityDTO> result = new ArrayList<>();
+
+        for (City city : cities) {
+            result.add(toDTO(city));
+        }
+
+        return result;
     }
 
     public CityDTO saveCity(City city) {
