@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Endpoint Execution')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header(${member.name}, 'Endpoint execution console')}"></header>
+
+<main class="page-shell page-shell--narrow">
+    <section class="utility-row">
+        <a th:href="@{/members/{memberId}(memberId=${member.id})}" class="text-link">Back to Member Endpoints</a>
+    </section>
+
+    <section id="execution-card" class="form-card"
+             th:classappend="'endpoint-card--' + ${#strings.toLowerCase(endpoint.method)}"
+             th:data-has-result="${hasResult != null ? hasResult : false}">
+
+        <div id="execution-card-head" class="endpoint-card__head">
+            <span class="method-badge" th:text="${endpoint.method}">GET</span>
+            <h2 th:text="${endpoint.title}">Endpoint Title</h2>
+        </div>
+
+        <form class="endpoint-form" id="execution-form"
+              th:action="@{/members/{memberId}/endpoints/{endpointId}(memberId=${member.id}, endpointId=${endpoint.id})}"
+              method="post">
+
+            <div class="dynamic-inputs-container" th:data-path="${endpoint.path}"></div>
+
+            <input type="hidden" name="pathInput" th:value="${endpoint.path}">
+
+            <th:block th:if="${#strings.equalsIgnoreCase(endpoint.method, 'POST') or #strings.equalsIgnoreCase(endpoint.method, 'PUT') or #strings.equalsIgnoreCase(endpoint.method, 'PATCH')}">
+                <label for="requestBody" style="margin-top: 12px; display: block;">Request Body (JSON)</label>
+                <textarea id="requestBody" name="requestBody" rows="6" style="margin-top: 8px;"></textarea>
+            </th:block>
+
+            <button type="submit" id="submit-btn">Submit</button>
+        </form>
+    </section>
+
+    <section class="result-card" th:if="${hasResult}" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+
+        <p th:if="${!result.success}" class="error-text" id="error-message-box">
+            <strong>Error:</strong> <span th:text="${result.errorMessage}">Error message</span>
+        </p>
+
+        <div id="hidden-request-url" style="display: none;" th:text="${result.requestUrl}"></div>
+        <div id="raw-json-data" style="display: none;" th:text="${result.responseBody}"></div>
+
+        <div class="table-responsive" id="table-container"></div>
+        <pre id="fallback-pre" th:text="${result.responseBody}" style="display: none;"></pre>
+
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        // --- Smart Form & UI Hiding Logic ---
+        const formCard = document.getElementById('execution-card');
+        const cardHead = document.getElementById('execution-card-head');
+        const form = document.getElementById('execution-form');
+        const methodBadge = cardHead ? cardHead.querySelector('.method-badge') : null;
+        const method = methodBadge ? methodBadge.textContent.toUpperCase() : 'GET';
+
+        if(form) {
+            const container = form.querySelector('.dynamic-inputs-container');
+            const realInput = form.querySelector('input[name="pathInput"]');
+            const originalPath = container.getAttribute('data-path');
+            const hasResult = formCard.getAttribute('data-has-result') === 'true';
+
+            const regex = /\{([^}]+)\}/g;
+            let matches = [...originalPath.matchAll(regex)];
+
+            if (matches.length === 0 && method === 'GET') {
+                cardHead.style.display = 'none';
+                if (hasResult) {
+                    formCard.style.display = 'none';
+                }
+            } else {
+                form.style.marginTop = '16px';
+                document.getElementById('submit-btn').style.marginTop = '15px';
+            }
+
+            if (matches.length > 0) {
+                matches.forEach(match => {
+                    const varName = match[1];
+                    const parts = originalPath.split('/');
+                    let context = "";
+                    for (let i = 0; i < parts.length; i++) {
+                        if (parts[i] === '{' + varName + '}' && i > 0) {
+                            context = parts[i-1];
+                            break;
+                        }
+                    }
+
+                    const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+                    let labelText = '';
+                    if (context && context.toLowerCase() !== 'api' && context.toLowerCase() !== varName.toLowerCase()) {
+                        labelText = 'Enter ' + capitalize(context) + ' ' + capitalize(varName);
+                    } else {
+                        labelText = 'Enter ' + capitalize(varName);
+                    }
+
+                    const label = document.createElement('label');
+                    label.textContent = labelText;
+                    label.style.display = 'block';
+                    label.style.marginTop = '8px';
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.required = true;
+                    input.setAttribute('data-var-name', varName);
+                    input.style.marginBottom = '8px';
+                    input.style.marginTop = '8px';
+
+                    container.appendChild(label);
+                    container.appendChild(input);
+                });
+            }
+
+            form.addEventListener('submit', function() {
+                let finalPath = originalPath;
+                const dynamicInputs = container.querySelectorAll('input[data-var-name]');
+
+                dynamicInputs.forEach(input => {
+                    const varName = input.getAttribute('data-var-name');
+                    finalPath = finalPath.replace('{' + varName + '}', input.value);
+                });
+
+                realInput.value = finalPath;
+            });
+        }
+
+        // --- JSON to Table / IMAGE Logic ---
+        const rawDataEl = document.getElementById('raw-json-data');
+        const reqUrlEl = document.getElementById('hidden-request-url');
+        const tableContainer = document.getElementById('table-container');
+        const fallbackPre = document.getElementById('fallback-pre');
+        const errorBox = document.getElementById('error-message-box');
+
+        if (!rawDataEl || !tableContainer) return;
+
+        const rawJson = rawDataEl.textContent.trim();
+        const reqUrl = reqUrlEl ? reqUrlEl.textContent.trim() : '';
+
+        // Extract the backend base URL (e.g. http://localhost:9081)
+        const baseUrlMatch = reqUrl.match(/^(https?:\/\/[^\/]+)/);
+        const backendBaseUrl = baseUrlMatch ? baseUrlMatch[1] : 'http://localhost:9081';
+
+        // Keep this interceptor just in case someone manually tests the /picture endpoint
+        if (reqUrl.toLowerCase().includes('picture') && method === 'GET') {
+            fallbackPre.style.display = 'none';
+            if (errorBox) errorBox.style.display = 'none';
+            tableContainer.innerHTML = `
+                <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; margin-top: 20px;">
+                    <h2 style="margin-top: 0; margin-bottom: 16px;">Image Retrieved</h2>
+                    <a href="${reqUrl}" target="_blank" style="display: inline-block; padding: 12px 24px; background: #e5f3f6; color: #256d7b; font-weight: 700; border-radius: 8px; text-decoration: none; border: 1px solid #a9cfd8; font-size: 16px; transition: background 0.2s;">
+                        🔗 Click here to view Image
+                    </a>
+                </div>
+            `;
+            return;
+        }
+
+        if (!rawJson) return;
+
+        function formatCellData(val) {
+            if (Array.isArray(val)) {
+                if(val.length > 0 && typeof val[0] !== 'object') {
+                    return val.join(', ');
+                }
+                return `[List of ${val.length} items]`;
+            } else if (typeof val === 'object' && val !== null) {
+                return '{Complex Object}';
+            }
+            return val;
+        }
+
+        try {
+            const data = JSON.parse(rawJson);
+            fallbackPre.style.display = 'none';
+
+            if (Array.isArray(data) && data.length > 0) {
+                const table = document.createElement('table');
+                table.className = 'response-table';
+
+                const thead = document.createElement('thead');
+                const headerRow = document.createElement('tr');
+                const keys = Object.keys(data[0]);
+
+                // --- FIXED: No more extra picture column added here ---
+                keys.forEach(key => {
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                });
+
+                thead.appendChild(headerRow);
+                table.appendChild(thead);
+
+                const tbody = document.createElement('tbody');
+                data.forEach(item => {
+                    const tr = document.createElement('tr');
+                    keys.forEach(key => {
+                        const td = document.createElement('td');
+
+                        // 🔥 THE FIX: Hijack the existing picture column 🔥
+                        if (key === 'picture' && item.staffId) {
+                            // Instead of rendering the empty data, build the beautiful button!
+                            const picUrl = backendBaseUrl + '/api/staff/' + item.staffId + '/picture';
+                            td.innerHTML = `<a href="${picUrl}" target="_blank" style="display: inline-block; padding: 6px 12px; background: #e5f3f6; color: #256d7b; font-weight: 600; border-radius: 6px; text-decoration: none; border: 1px solid #a9cfd8; font-size: 12px; white-space: nowrap;">🖼️ View Picture</a>`;
+                        } else {
+                            // All other columns use standard formatting
+                            td.textContent = formatCellData(item[key]);
+                        }
+
+                        tr.appendChild(td);
+                    });
+
+                    tbody.appendChild(tr);
+                });
+                table.appendChild(tbody);
+                tableContainer.appendChild(table);
+
+            } else if (typeof data === 'object' && data !== null && !Array.isArray(data)) {
+                // Logic for a single object (e.g. Find Staff by ID)
+                const table = document.createElement('table');
+                table.className = 'response-table';
+                const tbody = document.createElement('tbody');
+
+                const keys = Object.keys(data);
+
+                for (const [key, value] of Object.entries(data)) {
+                    const tr = document.createElement('tr');
+                    const th = document.createElement('th');
+                    th.textContent = key;
+                    const td = document.createElement('td');
+
+                    // 🔥 THE FIX (Single View): Hijack the existing picture row 🔥
+                    if (key === 'picture' && data.staffId) {
+                        const picUrl = backendBaseUrl + '/api/staff/' + data.staffId + '/picture';
+                        td.innerHTML = `<a href="${picUrl}" target="_blank" style="display: inline-block; padding: 6px 12px; background: #e5f3f6; color: #256d7b; font-weight: 600; border-radius: 6px; text-decoration: none; border: 1px solid #a9cfd8; font-size: 13px;">🖼️ View Image</a>`;
+                    } else {
+                        td.textContent = formatCellData(value);
+                    }
+
+                    tr.appendChild(th);
+                    tr.appendChild(td);
+                    tbody.appendChild(tr);
+                }
+
+                // --- FIXED: No more extra picture row added at the bottom ---
+
+                table.appendChild(tbody);
+                tableContainer.appendChild(table);
+
+            } else {
+                fallbackPre.style.display = 'block';
+            }
+        } catch (e) {
+            fallbackPre.style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>

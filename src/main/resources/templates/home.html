@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Team API Directory')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header('Team API Directory', 'Choose a team member to view and execute assigned endpoints.')}"></header>
+
+<main class="page-shell">
+    <section class="member-grid member-grid--large">
+        <a class="member-card"
+           th:each="member : ${members}"
+           th:href="@{/members/{memberId}(memberId=${member.id})}">
+            <div class="member-card__avatar-wrap">
+                <img class="member-card__avatar" th:src="${member.imageUrl}" th:alt="${member.name}">
+            </div>
+            <div class="member-card__content">
+                <h2 th:text="${member.name}">Member Name</h2>
+                <p class="member-card__entities" th:text="${member.entities}">Entity ownership</p>
+            </div>
+        </a>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">API Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<header class="site-header" th:fragment="header(pageTitle, subtitle)">
+    <div class="site-header__inner">
+        <a class="brand" th:href="@{/}">SocialPlatform</a>
+        <div class="site-header__copy">
+            <h1 th:text="${pageTitle}">Page Title</h1>
+            <p th:if="${subtitle != null}" th:text="${subtitle}">Subtitle</p>
+        </div>
+    </div>
+</header>
+</body>
+</html>

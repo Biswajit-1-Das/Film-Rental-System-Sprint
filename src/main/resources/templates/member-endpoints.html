@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Member Endpoints')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: header(${member.name}, 'Owned entities: ' + ${member.entities})}"></header>
+
+<main class="page-shell">
+    <section class="utility-row">
+        <a th:href="@{/}" class="text-link">Back to Team Members</a>
+    </section>
+
+    <section th:if="${ownershipNotes != null and !ownershipNotes.isEmpty()}" class="note-box">
+        <p th:each="note : ${ownershipNotes}" th:text="${note}">Ownership note</p>
+    </section>
+
+    <section class="endpoint-grid" th:if="${!endpoints.isEmpty()}">
+
+        <article class="endpoint-card" th:each="endpoint, stat : ${endpoints}" th:classappend="'endpoint-card--' + ${#strings.toLowerCase(endpoint.method)}">
+            <div class="endpoint-card__head">
+                <span class="method-badge" th:text="${endpoint.method}">GET</span>
+                <h3 th:text="${endpoint.entity}">Entity</h3>
+            </div>
+
+            <form class="endpoint-form" style="margin-top: 16px;"
+                  th:action="@{/members/{memberId}/endpoints/{endpointId}(memberId=${member.id}, endpointId=${endpoint.id})}"
+                  method="post">
+
+                <div class="dynamic-inputs-container" th:data-path="${endpoint.path}"></div>
+
+                <input type="hidden" name="pathInput" th:value="${endpoint.path}">
+
+                <th:block th:if="${#strings.equalsIgnoreCase(endpoint.method, 'POST') or #strings.equalsIgnoreCase(endpoint.method, 'PUT') or #strings.equalsIgnoreCase(endpoint.method, 'PATCH')}">
+                    <label th:for="'requestBody-' + ${stat.index}">Request Body (JSON)</label>
+                    <textarea th:id="'requestBody-' + ${stat.index}"
+                              name="requestBody"
+                              rows="4"></textarea>
+                </th:block>
+
+                <button type="submit">Run Endpoint</button>
+            </form>
+
+            <a class="text-link"
+               th:href="@{/members/{memberId}/endpoints/{endpointId}(memberId=${member.id}, endpointId=${endpoint.id})}">Open Detailed View</a>
+        </article>
+    </section>
+
+    <section class="empty-block" th:if="${endpoints.isEmpty()}">
+        <h2>No endpoints mapped</h2>
+        <p>This member currently has no endpoint assignment.</p>
+    </section>
+</main>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.endpoint-form').forEach(form => {
+            const container = form.querySelector('.dynamic-inputs-container');
+            const realInput = form.querySelector('input[name="pathInput"]');
+            const originalPath = container.getAttribute('data-path');
+
+            const regex = /\{([^}]+)\}/g;
+            let matches = [...originalPath.matchAll(regex)];
+
+            if (matches.length > 0) {
+                matches.forEach(match => {
+                    const varName = match[1]; // e.g. "id"
+
+                    // --- SMART LABEL CONTEXT LOGIC ---
+                    const parts = originalPath.split('/');
+                    let context = "";
+
+                    // Find the word right before the variable in the URL path
+                    for (let i = 0; i < parts.length; i++) {
+                        if (parts[i] === '{' + varName + '}' && i > 0) {
+                            context = parts[i-1];
+                            break;
+                        }
+                    }
+
+                    // Capitalize helper function
+                    const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+                    let labelText = '';
+                    // If the context exists, isn't generic "api", and isn't the same as the variable
+                    if (context && context.toLowerCase() !== 'api' && context.toLowerCase() !== varName.toLowerCase()) {
+                        labelText = 'Enter ' + capitalize(context) + ' ' + capitalize(varName);
+                    } else {
+                        labelText = 'Enter ' + capitalize(varName);
+                    }
+
+                    const label = document.createElement('label');
+                    label.textContent = labelText;
+                    label.style.display = 'block';
+                    label.style.marginTop = '8px';
+
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.required = true;
+                    input.setAttribute('data-var-name', varName);
+                    input.style.marginBottom = '8px';
+
+                    container.appendChild(label);
+                    container.appendChild(input);
+                });
+            }
+
+            form.addEventListener('submit', function() {
+                let finalPath = originalPath;
+                const dynamicInputs = container.querySelectorAll('input[data-var-name]');
+
+                dynamicInputs.forEach(input => {
+                    const varName = input.getAttribute('data-var-name');
+                    finalPath = finalPath.replace('{' + varName + '}', input.value);
+                });
+
+                realInput.value = finalPath;
+            });
+        });
+    });
+</script>
+</body>
+</html>
