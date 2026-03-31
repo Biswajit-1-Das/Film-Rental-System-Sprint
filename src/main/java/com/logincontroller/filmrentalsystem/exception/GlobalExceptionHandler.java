@@ -34,21 +34,20 @@ public class GlobalExceptionHandler {
     }
 
     // 🔥 THE HACK (Option 2): Intercepts generic RuntimeExceptions thrown by your Services
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiError> handleGenericRuntimeException(RuntimeException ex, HttpServletRequest req) {
+ // 🔥 THE ULTIMATE HACK: Upgraded to Exception.class to catch EVERYTHING
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleAllExceptions(Exception ex, HttpServletRequest req) {
+        String message = ex.getMessage() != null ? ex.getMessage() : ex.toString();
+        
         // If the service threw a generic error but the message implies data is missing
-        if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("not found")) {
+        if (message.toLowerCase().contains("not found") || message.toLowerCase().contains("no value present")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiError(HttpStatus.NOT_FOUND.value(), 
-                                     ex.getMessage(), 
-                                     req.getRequestURI()));
+                    .body(new ApiError(HttpStatus.NOT_FOUND.value(), message, req.getRequestURI()));
         }
         
-        // If it's a real crash, let it stay a 500 error
+        // If it's a real crash, return it cleanly so the frontend can display it
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), 
-                                 ex.getMessage(), 
-                                 req.getRequestURI()));
+                .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), message, req.getRequestURI()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
