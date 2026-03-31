@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins="http://10.191.27.14:9090")
 @RequestMapping("/api/category")
 @RequiredArgsConstructor
 public class CategoryController {
@@ -21,7 +22,7 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
-    @GetMapping("/search")
+    @GetMapping("/name/{name}")
     public ResponseEntity<CategoryDTO> getCategoryByName(@RequestParam String name) {
         return ResponseEntity.ok(categoryService.getCategoryByName(name));
     }
