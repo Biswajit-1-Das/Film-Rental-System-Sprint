@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 
 @RestController
-@RequestMapping("/languages")
+@RequestMapping("/api/language")
 @RequiredArgsConstructor
 public class LanguageController {
 

@@ -35,8 +35,9 @@ public class StaffService {
         dto.setStaffId(staff.getStaffId());
         dto.setFirstName(staff.getFirstName());
         dto.setLastName(staff.getLastName());
+        dto.setPicture(staff.getPicture());
         dto.setEmail(staff.getEmail());
-        dto.setActive(staff.getActive() != null && staff.getActive() != 0);
+        dto.setActive(staff.getActive() != 0 && staff.getActive() != 0);
         dto.setUsername(staff.getUsername());
         dto.setLastUpdate(staff.getLastUpdate());
 
