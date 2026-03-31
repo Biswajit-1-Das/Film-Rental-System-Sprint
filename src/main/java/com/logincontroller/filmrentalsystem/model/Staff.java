@@ -29,7 +29,7 @@ public class Staff {
     private String email;
 
     @Column(name = "active", nullable = false)
-    private Byte active;
+    private byte active;
 
     @Column(name = "username", nullable = false, length = 16)
     private String username;

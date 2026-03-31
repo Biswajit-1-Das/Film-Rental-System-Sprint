@@ -9,6 +9,7 @@ public class StaffResponseDTO {
     private Byte staffId;
     private String firstName;
     private String lastName;
+    private byte[] picture;
     private String email;
     private Boolean active;
     private String username;
