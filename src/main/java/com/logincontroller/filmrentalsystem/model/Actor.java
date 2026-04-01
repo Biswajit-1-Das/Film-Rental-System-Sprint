@@ -12,10 +12,13 @@ import java.util.List;
 
 @Entity
 @Table(name = "actor")
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor //creates empty constructor
+@AllArgsConstructor //creates constructor with all fields
 @Data
-@Builder
+@Builder //Helps create object like: Actor actor = Actor.builder()
+    //                                       .firstName("Tom")
+   //                                        .lastName("Hanks")
+   //                                        .build();
 public class Actor {
 
     @Id
