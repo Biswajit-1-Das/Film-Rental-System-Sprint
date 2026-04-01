@@ -52,12 +52,12 @@ public class Film {
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
-    // Primary language of the film
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "language_id", nullable = false)
     private Language language;
 
-    // Original language (nullable — not all films have this)
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "original_language_id", nullable = true)
     private Language originalLanguage;
@@ -66,7 +66,7 @@ public class Film {
     @JsonIgnore
     private List<FilmActor> filmActors = new ArrayList<>();
 
-    // NEW: Inverse side of Inventory ↔ Film
+
     @OneToMany(mappedBy = "film", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();
