@@ -42,4 +42,6 @@ public interface FilmRepository extends JpaRepository<Film, Short> {
 
     @Query("SELECT f.releaseYear, COUNT(f) FROM Film f GROUP BY f.releaseYear ORDER BY f.releaseYear")
     List<Object[]> countFilmsGroupedByReleaseYear();
+
+    List<Film> getFilmsByFilmId(Short filmId);
 }

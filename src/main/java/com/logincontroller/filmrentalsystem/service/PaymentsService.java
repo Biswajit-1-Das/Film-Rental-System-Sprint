@@ -80,26 +80,47 @@ public class PaymentsService {
 
     @Transactional(readOnly = true)
     public List<PaymentsResponseDTO> getPaymentsByCustomer(Short customerId) {
-        return paymentsRepository.findByCustomerCustomerId(customerId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+//        return paymentsRepository.findByCustomerCustomerId(customerId)
+//                .stream()
+//                .map(this::toResponseDTO)
+//                .collect(Collectors.toList());
+        List<Payments> payments = paymentsRepository.findByCustomerCustomerId(customerId);
+        List<PaymentsResponseDTO> result = new ArrayList<>();
+        for(Payments p : payments)
+        {
+            result.add(toResponseDTO(p));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<PaymentsResponseDTO> getPaymentsByStaff(Byte staffId) {
-        return paymentsRepository.findByStaffStaffId(staffId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+//        return paymentsRepository.findByStaffStaffId(staffId)
+//                .stream()
+//                .map(this::toResponseDTO)
+//                .collect(Collectors.toList());
+        List<Payments> payments = paymentsRepository.findByStaffStaffId(staffId);
+        List<PaymentsResponseDTO> result = new ArrayList<>();
+        for(Payments p : payments)
+        {
+            result.add(toResponseDTO(p));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<PaymentsResponseDTO> getPaymentsByRental(Integer rentalId) {
-        return paymentsRepository.findByRentalRentalId(rentalId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+//        return paymentsRepository.findByRentalRentalId(rentalId)
+//                .stream()
+//                .map(this::toResponseDTO)
+//                .collect(Collectors.toList());
+        List<Payments> payments = paymentsRepository.findByRentalRentalId(rentalId);
+        List<PaymentsResponseDTO> result = new ArrayList<>();
+        for(Payments p : payments)
+        {
+            result.add(toResponseDTO(p));
+        }
+        return result;
     }
 
     @Transactional
@@ -137,9 +158,6 @@ public class PaymentsService {
         }
         if (o instanceof LocalDate) {
             return (LocalDate) o;
-        }
-        if (o instanceof java.util.Date) {
-            return ((java.util.Date) o).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
         throw new IllegalArgumentException("Unsupported date type: " + o.getClass());
     }

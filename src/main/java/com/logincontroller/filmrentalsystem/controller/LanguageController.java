@@ -7,17 +7,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
-@RequestMapping("/languages")
+@CrossOrigin(origins="http://10.191.27.14:9090")
+@RequestMapping("/api/language")
 @RequiredArgsConstructor
 public class LanguageController {
 
     private final LanguageService languageService;
 
     @GetMapping
-    public ResponseEntity<List<LanguageDTO>> getAllLanguages() {
+    public ResponseEntity<HashSet<LanguageDTO>> getAllLanguages() {
         return ResponseEntity.ok(languageService.getAllLanguages());
     }
 

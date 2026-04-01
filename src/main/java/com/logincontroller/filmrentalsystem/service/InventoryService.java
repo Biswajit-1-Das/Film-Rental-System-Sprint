@@ -1,12 +1,15 @@
 package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.InventoryResponseDTO;
+import com.logincontroller.filmrentalsystem.model.Film;
 import com.logincontroller.filmrentalsystem.model.Inventory;
+import com.logincontroller.filmrentalsystem.repository.FilmRepository;
 import com.logincontroller.filmrentalsystem.repository.InventoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,16 +18,30 @@ import java.util.stream.Collectors;
 public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
+    private final FilmRepository filmRepository;
 
     private InventoryResponseDTO toResponseDTO(Inventory inv) {
+//        InventoryResponseDTO dto = new InventoryResponseDTO();
+//        dto.setInventoryId(inv.getInventoryId());
+//        dto.setLastUpdate(inv.getLastUpdate());
+//        if (inv.getFilm() != null) {
+//            dto.setFilmId(inv.getFilm().getFilmId());
+//            dto.setFilmTitle(inv.getFilm().getTitle());
+//        }
+//        if (inv.getStore() != null) {
+//            dto.setStoreId(inv.getStore().getStoreId());
+//        }
+//        return dto;
         InventoryResponseDTO dto = new InventoryResponseDTO();
         dto.setInventoryId(inv.getInventoryId());
         dto.setLastUpdate(inv.getLastUpdate());
-        if (inv.getFilm() != null) {
+        if(inv.getFilm()!=null)
+        {
             dto.setFilmId(inv.getFilm().getFilmId());
             dto.setFilmTitle(inv.getFilm().getTitle());
         }
-        if (inv.getStore() != null) {
+        if(inv.getStore()!=null)
+        {
             dto.setStoreId(inv.getStore().getStoreId());
         }
         return dto;
@@ -53,25 +70,47 @@ public class InventoryService {
 
     @Transactional(readOnly = true)
     public List<InventoryResponseDTO> getInventoryByFilm(Short filmId) {
-        return inventoryRepository.findByFilm_FilmId(filmId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+//        return inventoryRepository.findByFilm_FilmId(filmId)
+//                .stream()
+//                .map(this::toResponseDTO)
+//                .collect(Collectors.toList());
+        List<Inventory> inventory = inventoryRepository.findByFilm_FilmId(filmId);
+        List<InventoryResponseDTO> ivr = new ArrayList<>();
+        for(Inventory i : inventory)
+        {
+            ivr.add(toResponseDTO(i));
+        }
+        return ivr;
     }
 
     @Transactional(readOnly = true)
     public List<InventoryResponseDTO> getInventoryByStore(Byte storeId) {
-        return inventoryRepository.findByStore_StoreId(storeId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+//        return inventoryRepository.findByStore_StoreId(storeId)
+//                .stream()
+//                .map(this::toResponseDTO)
+//                .collect(Collectors.toList());
+
+        List<Inventory> inventory = inventoryRepository.findByStore_StoreId(storeId);
+        List<InventoryResponseDTO> result = new ArrayList<>();
+        for(Inventory i : inventory)
+        {
+            result.add(toResponseDTO(i));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<InventoryResponseDTO> getInventoryByFilmAndStore(Short filmId, Byte storeId) {
-        return inventoryRepository.findByFilm_FilmIdAndStore_StoreId(filmId, storeId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+//        return inventoryRepository.findByFilm_FilmIdAndStore_StoreId(filmId, storeId)
+//                .stream()
+//                .map(this::toResponseDTO)
+//                .collect(Collectors.toList());
+//    }
+        List<Inventory> inventory = inventoryRepository.findByFilm_FilmIdAndStore_StoreId(filmId, storeId);
+        List<InventoryResponseDTO> result = new ArrayList<>();
+        for (Inventory i : inventory) {
+            result.add(toResponseDTO(i));
+        }
+        return result;
     }
 }

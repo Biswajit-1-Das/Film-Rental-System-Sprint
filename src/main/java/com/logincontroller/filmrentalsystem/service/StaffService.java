@@ -15,8 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +26,6 @@ public class StaffService {
     private final AddressRepository addressRepository;
     private final StoreRepository storeRepository;
 
-    /** Exposed for store manager mapping without extra fetch. */
     public StaffResponseDTO mapStaff(Staff staff) {
         return toResponseDTO(staff);
     }
@@ -36,26 +35,30 @@ public class StaffService {
         dto.setStaffId(staff.getStaffId());
         dto.setFirstName(staff.getFirstName());
         dto.setLastName(staff.getLastName());
+        dto.setPicture(staff.getPicture());
         dto.setEmail(staff.getEmail());
-        dto.setActive(staff.getActive() != null && staff.getActive() != 0);
+        dto.setActive(staff.getActive() != 0 && staff.getActive() != 0);
         dto.setUsername(staff.getUsername());
         dto.setLastUpdate(staff.getLastUpdate());
+
         if (staff.getStore() != null) {
             dto.setStoreId(staff.getStore().getStoreId());
         }
+
         if (staff.getAddress() != null) {
             dto.setAddressId(staff.getAddress().getAddressId());
             dto.setAddressLine(staff.getAddress().getAddress());
             dto.setPhone(staff.getAddress().getPhone());
+
             if (staff.getAddress().getCity() != null) {
                 dto.setCity(staff.getAddress().getCity().getCity());
+
                 if (staff.getAddress().getCity().getCountry() != null) {
-                    dto.setCountry(
-                            staff.getAddress().getCity().getCountry().getCountry()
-                    );
+                    dto.setCountry(staff.getAddress().getCity().getCountry().getCountry());
                 }
             }
         }
+
         return dto;
     }
 
@@ -69,14 +72,17 @@ public class StaffService {
         dto.setPhone(address.getPhone());
         dto.setLocation(address.getLocation());
         dto.setLastUpdate(address.getLastUpdate());
+
         if (address.getCity() != null) {
             dto.setCityId(address.getCity().getCityId());
             dto.setCityName(address.getCity().getCity());
+
             if (address.getCity().getCountry() != null) {
                 dto.setCountryId(address.getCity().getCountry().getCountryId());
                 dto.setCountryName(address.getCity().getCountry().getCountry());
             }
         }
+
         return dto;
     }
 
@@ -87,26 +93,38 @@ public class StaffService {
 
     @Transactional(readOnly = true)
     public List<StaffResponseDTO> getAllStaff() {
-        return staffRepository.findAll()
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Staff> list = staffRepository.findAll();
+        List<StaffResponseDTO> result = new ArrayList<>();
+
+        for (Staff s : list) {
+            result.add(toResponseDTO(s));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<StaffResponseDTO> getActiveStaff() {
-        return staffRepository.findByActive((byte) 1)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Staff> list = staffRepository.findByActive((byte) 1);
+        List<StaffResponseDTO> result = new ArrayList<>();
+
+        for (Staff s : list) {
+            result.add(toResponseDTO(s));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<StaffResponseDTO> getStaffByStore(Byte storeId) {
-        return staffRepository.findByStoreStoreId(storeId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Staff> list = staffRepository.findByStoreStoreId(storeId);
+        List<StaffResponseDTO> result = new ArrayList<>();
+
+        for (Staff s : list) {
+            result.add(toResponseDTO(s));
+        }
+
+        return result;
     }
 
     public List<Staff> getStaffByAddress(Short addressId) {
@@ -120,25 +138,34 @@ public class StaffService {
 
     @Transactional(readOnly = true)
     public List<StaffResponseDTO> searchByLastName(String ln) {
-        return staffRepository.findByLastNameContainingIgnoreCase(ln)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Staff> list = staffRepository.findByLastNameContainingIgnoreCase(ln);
+        List<StaffResponseDTO> result = new ArrayList<>();
+
+        for (Staff s : list) {
+            result.add(toResponseDTO(s));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<StaffResponseDTO> searchByFirstName(String fn) {
-        return staffRepository.findByFirstNameContainingIgnoreCase(fn)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Staff> list = staffRepository.findByFirstNameContainingIgnoreCase(fn);
+        List<StaffResponseDTO> result = new ArrayList<>();
+
+        for (Staff s : list) {
+            result.add(toResponseDTO(s));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public StaffResponseDTO getStaffByEmail(String email) {
-        return staffRepository.findByEmailIgnoreCase(email)
-                .map(this::toResponseDTO)
+        Staff staff = staffRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("Staff not found with email: " + email));
+
+        return toResponseDTO(staff);
     }
 
     @Transactional(readOnly = true)
@@ -149,26 +176,38 @@ public class StaffService {
 
     @Transactional(readOnly = true)
     public List<StaffResponseDTO> getStaffByCity(String city) {
-        return staffRepository.findByAddress_City_City(city)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Staff> list = staffRepository.findByAddress_City_City(city);
+        List<StaffResponseDTO> result = new ArrayList<>();
+
+        for (Staff s : list) {
+            result.add(toResponseDTO(s));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<StaffResponseDTO> getStaffByCountry(String country) {
-        return staffRepository.findByAddress_City_Country_Country(country)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Staff> list = staffRepository.findByAddress_City_Country_Country(country);
+        List<StaffResponseDTO> result = new ArrayList<>();
+
+        for (Staff s : list) {
+            result.add(toResponseDTO(s));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<StaffResponseDTO> getStaffByPhone(String phone) {
-        return staffRepository.findByAddress_Phone(phone)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Staff> list = staffRepository.findByAddress_Phone(phone);
+        List<StaffResponseDTO> result = new ArrayList<>();
+
+        for (Staff s : list) {
+            result.add(toResponseDTO(s));
+        }
+
+        return result;
     }
 
     @Transactional
@@ -247,6 +286,7 @@ public class StaffService {
         Staff staff = getEntityById(id);
         staff.setActive((byte) 0);
         staffRepository.save(staff);
+        
     }
 
     @Transactional

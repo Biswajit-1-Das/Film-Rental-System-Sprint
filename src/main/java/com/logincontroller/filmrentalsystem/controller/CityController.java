@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cities")
+@CrossOrigin(origins="http://10.191.27.14:9090")
+@RequestMapping("/api/city")
 @RequiredArgsConstructor
 public class CityController {
 

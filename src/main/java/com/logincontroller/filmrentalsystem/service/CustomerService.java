@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,118 +60,163 @@ public class CustomerService {
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getAllCustomers() {
-        return customerRepository.findAll()
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findAll();
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public CustomerResponseDTO getCustomerById(Short id) {
-        return toResponseDTO(getEntityById(id));
+        Customer customer = getEntityById(id);
+        return toResponseDTO(customer);
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> searchByLastName(String lastName) {
-        return customerRepository.findByLastNameContainingIgnoreCase(lastName)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByLastNameContainingIgnoreCase(lastName);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> searchByEmail(String email) {
-        return customerRepository.findByEmailContainingIgnoreCase(email)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByEmailContainingIgnoreCase(email);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getActiveCustomers() {
-        return customerRepository.findByActive((byte) 1)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByActive((byte) 1);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getInactiveCustomers() {
-        return customerRepository.findByActive((byte) 0)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByActive((byte) 0);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getCustomersByStore(Byte storeId) {
-        return customerRepository.findByStoreStoreId(storeId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByStoreStoreId(storeId);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public CustomerResponseDTO getCustomerByEmail(String email) {
-        return customerRepository.findByEmailIgnoreCase(email)
-                .map(this::toResponseDTO)
+        Customer customer = customerRepository.findByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("Customer not found with email: " + email));
+
+        return toResponseDTO(customer);
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getCustomersByFirstName(String firstName) {
-        return customerRepository.findByFirstNameContainingIgnoreCase(firstName)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByFirstNameContainingIgnoreCase(firstName);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getCustomersByLastName(String lastName) {
-        return customerRepository.findByLastNameContainingIgnoreCase(lastName)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByLastNameContainingIgnoreCase(lastName);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getCustomersByAddress(Short addressId) {
-        return customerRepository.findByAddressAddressId(addressId)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByAddressAddressId(addressId);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+        return result;
     }
 
     @Transactional(readOnly = true)
     public CustomerResponseDTO getCustomerByIdAndAddressId(Short customerId, Short addressId) {
-        return customerRepository.findByCustomerIdAndAddressAddressId(customerId, addressId)
-                .map(this::toResponseDTO)
+        Customer customer = customerRepository.findByCustomerIdAndAddressAddressId(customerId, addressId)
                 .orElseThrow(() -> new RuntimeException(
                         "Customer not found for id " + customerId + " and address " + addressId));
+
+        return toResponseDTO(customer);
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getCustomersByCity(String city) {
-        return customerRepository.findByAddress_City_City(city)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByAddress_City_City(city);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getCustomersByCountry(String country) {
-        return customerRepository.findByAddress_City_Country_Country(country)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByAddress_City_Country_Country(country);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+
+        return result;
     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponseDTO> getCustomersByPhone(String phone) {
-        return customerRepository.findByAddress_Phone(phone)
-                .stream()
-                .map(this::toResponseDTO)
-                .collect(Collectors.toList());
+        List<Customer> customers = customerRepository.findByAddress_Phone(phone);
+        List<CustomerResponseDTO> result = new ArrayList<>();
+
+        for (Customer customer : customers) {
+            result.add(toResponseDTO(customer));
+        }
+
+        return result;
     }
 
     @Transactional

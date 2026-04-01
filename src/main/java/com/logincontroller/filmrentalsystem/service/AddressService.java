@@ -6,6 +6,7 @@ import com.logincontroller.filmrentalsystem.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,28 +43,38 @@ public class AddressService {
     }
 
     public List<AddressDTO> getAllAddresses() {
-        return addressRepository.findAll()
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        List<Address> addresses = addressRepository.findAll();
+        List<AddressDTO> result = new ArrayList<>();
+
+        for (Address address : addresses) {
+            result.add(toDTO(address));
+        }
+        return result;
     }
 
     public AddressDTO getAddressById(Short id) {
-        return toDTO(getEntityById(id));
+        Address address = getEntityById(id);
+        return toDTO(address);
     }
 
     public List<AddressDTO> getAddressesByCity(Short cityId) {
-        return addressRepository.findByCityCityId(cityId)
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        List<Address> addresses = addressRepository.findByCityCityId(cityId);
+        List<AddressDTO> result = new ArrayList<>();
+
+        for (Address address : addresses) {
+            result.add(toDTO(address));
+        }
+        return result;
     }
 
     public List<AddressDTO> searchByDistrict(String district) {
-        return addressRepository.findByDistrictContainingIgnoreCase(district)
-                .stream()
-                .map(this::toDTO)
-                .collect(Collectors.toList());
+        List<Address> addresses = addressRepository.findByDistrictContainingIgnoreCase(district);
+        List<AddressDTO> result = new ArrayList<>();
+
+        for (Address address : addresses) {
+            result.add(toDTO(address));
+        }
+        return result;
     }
 
     public AddressDTO saveAddress(Address address) {

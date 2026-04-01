@@ -55,16 +55,16 @@ public class CountryService {
         return toDTO(countryRepository.save(country));
     }
 
-    @Transactional
-    public CountryDTO resolveOrCreate(String countryName) {
-        Country country = countryRepository.findByCountryIgnoreCase(countryName)
-                .orElseGet(() -> {
-                    Country newCountry = new Country();
-                    newCountry.setCountry(countryName);
-                    return countryRepository.save(newCountry);
-                });
-        return toDTO(country);
-    }
+//    @Transactional
+//    public CountryDTO resolveOrCreate(String countryName) {
+//        Country country = countryRepository.findByCountryIgnoreCase(countryName)
+//                .orElseGet(() -> {
+//                    Country newCountry = new Country();
+//                    newCountry.setCountry(countryName);
+//                    return countryRepository.save(newCountry);
+//                });
+//        return toDTO(country);
+//    }
 
     public void deleteCountry(Short id) {
         countryRepository.deleteById(id);

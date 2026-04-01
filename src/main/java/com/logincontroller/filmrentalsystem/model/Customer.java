@@ -9,10 +9,10 @@ import lombok.*;
 
 @Entity
 @Table(name = "customer")
-@Data               // getters + setters + toString
-@NoArgsConstructor  // default constructor
-@AllArgsConstructor // full constructor
-@Builder            // builder pattern
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Customer {
 
     @Id
@@ -31,6 +31,7 @@ public class Customer {
     @Column(name = "last_name")
     private String lastName;
 
+    @Column(name="email")
     private String email;
 
     // Owning Side: Customer has an Address
@@ -55,5 +56,6 @@ public class Customer {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore // Crucial to prevent infinite loops!
     private List<Payments> payments = new ArrayList<>();
+
 
 }
