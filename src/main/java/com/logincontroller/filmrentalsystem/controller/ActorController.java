@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins="http://10.191.27.14:9090")
 @RequestMapping("/api/actors")
 @RequiredArgsConstructor
 public class ActorController {

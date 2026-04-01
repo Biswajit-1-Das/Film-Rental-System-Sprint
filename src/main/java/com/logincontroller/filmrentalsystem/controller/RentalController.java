@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins="http://10.191.27.14:9090")
 @RequestMapping("/api/rental")
 @RequiredArgsConstructor
 public class RentalController {

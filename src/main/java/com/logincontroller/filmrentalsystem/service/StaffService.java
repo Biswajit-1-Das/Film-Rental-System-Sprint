@@ -70,7 +70,7 @@ public class StaffService {
         dto.setDistrict(address.getDistrict());
         dto.setPostalCode(address.getPostalCode());
         dto.setPhone(address.getPhone());
-        dto.setLocation(address.getLocation());
+        dto.setLocation(addressRepository.findLocationAsText(address.getAddressId()));
         dto.setLastUpdate(address.getLastUpdate());
 
         if (address.getCity() != null) {
