@@ -286,6 +286,7 @@ public class StaffService {
         Staff staff = getEntityById(id);
         staff.setActive((byte) 0);
         staffRepository.save(staff);
+        
     }
 
     @Transactional
