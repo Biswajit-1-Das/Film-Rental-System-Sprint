@@ -146,7 +146,8 @@ public class FilmController {
     public ResponseEntity<FilmResponseDTO> getFilmById(@PathVariable Short id) {
         return ResponseEntity.ok(filmService.getFilmById(id));
     }
-
+    
+    @GetMapping
     public ResponseEntity<List<FilmResponseDTO>> getAllFilms() {
         return ResponseEntity.ok(filmService.getAllFilms());
     }
