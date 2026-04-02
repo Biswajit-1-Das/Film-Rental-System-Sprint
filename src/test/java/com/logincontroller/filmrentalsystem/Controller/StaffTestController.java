@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import com.logincontroller.filmrentalsystem.controller.StaffController;
 import com.logincontroller.filmrentalsystem.dto.StaffResponseDTO;
 import com.logincontroller.filmrentalsystem.model.Staff;
+import com.logincontroller.filmrentalsystem.service.AddressService;
 import com.logincontroller.filmrentalsystem.service.StaffService;
+import com.logincontroller.filmrentalsystem.service.StoreService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -20,10 +22,16 @@ public class StaffTestController {
 
     StaffController staffController;
 
+    @Mock
+    private AddressService addressService;
+
+    @Mock
+    private StoreService storeService;
+
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-        staffController = new StaffController(staffService);
+        staffController = new StaffController(staffService, addressService, storeService);
     }
 
     @Test
