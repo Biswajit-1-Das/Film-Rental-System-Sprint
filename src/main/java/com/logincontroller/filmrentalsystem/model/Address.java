@@ -37,7 +37,7 @@ public class Address {
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "location", nullable = false)
+    @Column(name = "location",insertable = false, updatable = false)
     private String location;
 
     @Column(name = "last_update", nullable = false)
