@@ -37,7 +37,6 @@ public class ActorTestService {
         MockitoAnnotations.openMocks(this);
     }
 
-    // ✅ 1. getActorById
     @Test
     public void getActorById() {
         Actor actor = Actor.builder()
@@ -53,7 +52,6 @@ public class ActorTestService {
         assertEquals("Arun", result.getFirstName());
     }
 
-    // ✅ 2. getAllActors
     @Test
     public void getAllActors() {
 

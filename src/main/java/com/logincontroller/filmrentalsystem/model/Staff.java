@@ -20,7 +20,6 @@ public class Staff {
     @Column(name = "last_name", nullable = false, length = 45)
     private String lastName;
 
-    // Staff photo stored as binary in the DB
     @Lob
     @Column(name = "picture")
     private byte[] picture;
@@ -45,7 +44,6 @@ public class Staff {
     @JoinColumn(name = "address_id", nullable = false)
     private Address address;
 
-    // The store this staff member works at
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id", nullable = false)
     private Store store;

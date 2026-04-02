@@ -32,35 +32,14 @@ public class Language {
             insertable = false, updatable = false)
     private LocalDateTime lastUpdate;
 
-    // Inverse side — films using this as primary language
     @OneToMany(mappedBy = "language", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore // 🔥 CRITICAL FIX: Stops the infinite loop!
+    @JsonIgnore
     private Set<Film> films = new HashSet<>();
 
-    // Inverse side — films using this as original language
     @OneToMany(mappedBy = "originalLanguage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore // 🔥 CRITICAL FIX: Stops the infinite loop!
+    @JsonIgnore
     private Set<Film> originalLanguageFilms = new HashSet<>();
 
-    public void addFilm(Film film) {
-        films.add(film);
-        film.setLanguage(this);
-    }
-
-    public void removeFilm(Film film) {
-        films.remove(film);
-        film.setLanguage(null);
-    }
-
-    public void addOriginalLanguageFilm(Film film) {
-        originalLanguageFilms.add(film);
-        film.setOriginalLanguage(this);
-    }
-
-    public void removeOriginalLanguageFilm(Film film) {
-        originalLanguageFilms.remove(film);
-        film.setOriginalLanguage(null);
-    }
 
     @Override
     public boolean equals(Object o) {

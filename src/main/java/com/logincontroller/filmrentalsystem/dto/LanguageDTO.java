@@ -10,6 +10,5 @@ public class LanguageDTO {
     private Byte languageId;
     private String name;
     private LocalDateTime lastUpdate;
-    /** Populated when loading language with films */
     private List<String> filmTitles;
 }

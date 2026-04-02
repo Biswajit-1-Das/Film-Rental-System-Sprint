@@ -27,21 +27,17 @@ public class Rental {
     @Column(name = "rental_date")
     private LocalDateTime rentalDate;
 
-    // UNIDIRECTIONAL: Rental owns Inventory
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "inventory_id", nullable = false)
     private Inventory inventory;
 
-    // BIDIRECTIONAL: Rental owns Customer
-    @ManyToOne(fetch = FetchType.LAZY) // Added LAZY for performance
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @Column(name = "return_date")
     private LocalDateTime returnDate;
 
-    // FIX: Upgraded from "int staffId" to a proper Entity Mapping!
-    // UNIDIRECTIONAL: Rental owns Staff
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_id", nullable = false)
     private Staff staff;
@@ -49,8 +45,7 @@ public class Rental {
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
-    // NEW: Inverse side of Payment ↔ Rental
     @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore // Crucial to prevent infinite loops!
+    @JsonIgnore
     private List<Payments> payments = new ArrayList<>();
 }
