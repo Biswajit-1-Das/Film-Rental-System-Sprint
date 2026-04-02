@@ -61,10 +61,6 @@ public class ActorService {
     }
 
     public List<String> getAllActorNames() {
-//        return actorRepository.findAll()
-//                .stream()
-//                .map(actor -> actor.getFirstName() + " " + actor.getLastName())
-//                .collect(Collectors.toList());\
         List<Actor> actor = actorRepository.findAll();
         List<String> names= new ArrayList<>();
         for(Actor ar : actor)

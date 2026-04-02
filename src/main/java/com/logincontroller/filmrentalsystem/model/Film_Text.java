@@ -18,9 +18,6 @@ public class Film_Text {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    // One-to-one relationship with Film
-    // film_text shares the same primary key as film (film_id)
-    // so no separate join column is needed
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "film_id")

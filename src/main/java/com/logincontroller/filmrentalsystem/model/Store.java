@@ -25,7 +25,6 @@ public class Store {
     @Column(name = "store_id")
     private Byte storeId;
 
-    // The manager of this store — references the Staff table
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manager_staff_id", nullable = false)
     private Staff managerStaff;
@@ -37,13 +36,10 @@ public class Store {
     @Column(name = "last_update", nullable = false, insertable = false, updatable = false)
     private LocalDateTime lastUpdate;
 
-    // Inverse side of Customer ↔ Store
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Customer> customers = new ArrayList<>();
 
-    // NEW: Inverse side of Inventory ↔ Store
-    // @JsonIgnore prevents Postman from crashing when fetching a Store
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Inventory> inventories = new ArrayList<>();

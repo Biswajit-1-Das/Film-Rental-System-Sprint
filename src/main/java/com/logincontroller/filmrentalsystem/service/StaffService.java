@@ -37,7 +37,7 @@ public class StaffService {
         dto.setLastName(staff.getLastName());
         dto.setPicture(staff.getPicture());
         dto.setEmail(staff.getEmail());
-        dto.setActive(staff.getActive() != 0 && staff.getActive() != 0);
+        dto.setActive(staff.getActive() != 0 );
         dto.setUsername(staff.getUsername());
         dto.setLastUpdate(staff.getLastUpdate());
 
@@ -286,6 +286,7 @@ public class StaffService {
         Staff staff = getEntityById(id);
         staff.setActive((byte) 0);
         staffRepository.save(staff);
+        
     }
 
     @Transactional

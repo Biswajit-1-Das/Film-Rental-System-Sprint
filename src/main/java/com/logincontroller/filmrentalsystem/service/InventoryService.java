@@ -21,14 +21,27 @@ public class InventoryService {
     private final FilmRepository filmRepository;
 
     private InventoryResponseDTO toResponseDTO(Inventory inv) {
+//        InventoryResponseDTO dto = new InventoryResponseDTO();
+//        dto.setInventoryId(inv.getInventoryId());
+//        dto.setLastUpdate(inv.getLastUpdate());
+//        if (inv.getFilm() != null) {
+//            dto.setFilmId(inv.getFilm().getFilmId());
+//            dto.setFilmTitle(inv.getFilm().getTitle());
+//        }
+//        if (inv.getStore() != null) {
+//            dto.setStoreId(inv.getStore().getStoreId());
+//        }
+//        return dto;
         InventoryResponseDTO dto = new InventoryResponseDTO();
         dto.setInventoryId(inv.getInventoryId());
         dto.setLastUpdate(inv.getLastUpdate());
-        if (inv.getFilm() != null) {
+        if(inv.getFilm()!=null)
+        {
             dto.setFilmId(inv.getFilm().getFilmId());
             dto.setFilmTitle(inv.getFilm().getTitle());
         }
-        if (inv.getStore() != null) {
+        if(inv.getStore()!=null)
+        {
             dto.setStoreId(inv.getStore().getStoreId());
         }
         return dto;

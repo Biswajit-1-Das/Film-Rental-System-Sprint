@@ -23,7 +23,6 @@ public class LanguageController {
         return ResponseEntity.ok(languageService.getAllLanguages());
     }
 
-    /** Static paths must be registered before /{id} so "search" is not parsed as an id. */
     @GetMapping("/search")
     public ResponseEntity<LanguageDTO> getLanguageByName(@RequestParam String name) {
         return ResponseEntity.ok(languageService.getLanguageByName(name));
