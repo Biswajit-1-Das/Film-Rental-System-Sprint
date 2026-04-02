@@ -24,7 +24,7 @@ public class City {
     @JoinColumn(name = "country_id", nullable = false)
     private Country country;
 
-    @Column(name = "last_update", nullable = false)
+    @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
 
