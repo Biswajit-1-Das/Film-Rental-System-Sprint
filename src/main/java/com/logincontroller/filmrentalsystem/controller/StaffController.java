@@ -3,7 +3,9 @@ package com.logincontroller.filmrentalsystem.controller;
 import com.logincontroller.filmrentalsystem.dto.AddressResponseDTO;
 import com.logincontroller.filmrentalsystem.dto.StaffResponseDTO;
 import com.logincontroller.filmrentalsystem.model.Staff;
+import com.logincontroller.filmrentalsystem.service.AddressService;
 import com.logincontroller.filmrentalsystem.service.StaffService;
+import com.logincontroller.filmrentalsystem.service.StoreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,17 +14,22 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 @RestController
+@CrossOrigin(origins="http://10.191.27.14:9090")
 @RequestMapping("/api/staff")
 @RequiredArgsConstructor
 public class StaffController {
 
     private final StaffService staffService;
+    private final AddressService addressService;
+    private final StoreService storeService;
 
-    @PostMapping("/post")
-    public ResponseEntity<StaffResponseDTO> createStaff(@RequestBody Staff staff) {
-        return ResponseEntity.ok(staffService.createStaff(staff));
+
+    @GetMapping
+    public ResponseEntity<List<StaffResponseDTO>> getAllStaff() {
+        return ResponseEntity.ok(staffService.getAllStaff());
     }
 
     @GetMapping("/lastname/{ln}")
@@ -60,46 +67,6 @@ public class StaffController {
         return ResponseEntity.ok(staffService.getStaffByPhone(phone));
     }
 
-    @PutMapping("/update/fn/{id}")
-    public ResponseEntity<StaffResponseDTO> updateFirstName(
-            @PathVariable Byte id,
-            @RequestParam String firstName) {
-        return ResponseEntity.ok(staffService.updateFirstName(id, firstName));
-    }
-
-    @PutMapping("/update/ln/{id}")
-    public ResponseEntity<StaffResponseDTO> updateLastName(
-            @PathVariable Byte id,
-            @RequestParam String lastName) {
-        return ResponseEntity.ok(staffService.updateLastName(id, lastName));
-    }
-
-    @PutMapping("/update/email/{id}")
-    public ResponseEntity<StaffResponseDTO> updateEmail(
-            @PathVariable Byte id,
-            @RequestParam String email) {
-        return ResponseEntity.ok(staffService.updateEmail(id, email));
-    }
-
-    @PutMapping("/update/store/{id}")
-    public ResponseEntity<StaffResponseDTO> updateStore(
-            @PathVariable Byte id,
-            @RequestParam Byte storeId) {
-        return ResponseEntity.ok(staffService.updateStore(id, storeId));
-    }
-
-    @PutMapping("/update/phone/{id}")
-    public ResponseEntity<StaffResponseDTO> updatePhone(
-            @PathVariable Byte id,
-            @RequestParam String phone) {
-        return ResponseEntity.ok(staffService.updatePhone(id, phone));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<StaffResponseDTO>> getAllStaff() {
-        return ResponseEntity.ok(staffService.getAllStaff());
-    }
-
     @GetMapping("/active")
     public ResponseEntity<List<StaffResponseDTO>> getActiveStaff() {
         return ResponseEntity.ok(staffService.getActiveStaff());
@@ -115,10 +82,20 @@ public class StaffController {
         return ResponseEntity.ok(staffService.getStaffById(id));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<StaffResponseDTO> updateStaff(@PathVariable Byte id,
-                                                        @RequestBody Staff staff) {
-        return ResponseEntity.ok(staffService.updateStaff(id, staff));
+    @GetMapping(value = "/{id}/picture", produces = MediaType.IMAGE_JPEG_VALUE)
+    public ResponseEntity<byte[]> getPicture(@PathVariable Byte id) {
+        return ResponseEntity.ok(staffService.getPicture(id));
+    }
+
+    @PostMapping("/post")
+    public ResponseEntity<StaffResponseDTO> createStaff(@RequestBody Staff staff) {
+        if (staff.getStore() != null && staff.getStore().getStoreId() != null) {
+            staff.setStore(storeService.getEntityById(staff.getStore().getStoreId()));
+        }
+        if (staff.getAddress() != null && staff.getAddress().getAddressId() != null) {
+            staff.setAddress(addressService.getEntityById(staff.getAddress().getAddressId()));
+        }
+        return ResponseEntity.ok(staffService.createStaff(staff));
     }
 
     @PostMapping("/{id}/picture")
@@ -129,9 +106,61 @@ public class StaffController {
         return ResponseEntity.ok("Picture uploaded successfully");
     }
 
-    @GetMapping(value = "/{id}/picture", produces = MediaType.IMAGE_JPEG_VALUE)
-    public ResponseEntity<byte[]> getPicture(@PathVariable Byte id) {
-        return ResponseEntity.ok(staffService.getPicture(id));
+    @PutMapping("/{id}")
+    public ResponseEntity<StaffResponseDTO> updateStaff(@PathVariable Byte id, @RequestBody Staff staff) {
+        return ResponseEntity.ok(staffService.updateStaff(id, staff));
+    }
+
+    @PatchMapping("/{id}/firstname")
+    public ResponseEntity<StaffResponseDTO> updateFirstName(
+            @PathVariable Byte id,
+            @RequestBody Map<String, String> body) {
+
+        return ResponseEntity.ok(
+                staffService.updateFirstName(id, body.get("firstName"))
+        );
+    }
+
+    @PatchMapping("/{id}/lastname")
+    public ResponseEntity<StaffResponseDTO> updateLastName(
+            @PathVariable Byte id,
+            @RequestBody Map<String, String> body) {
+
+        return ResponseEntity.ok(
+                staffService.updateLastName(id, body.get("lastName"))
+        );
+    }
+
+    @PatchMapping("/{id}/email")
+    public ResponseEntity<StaffResponseDTO> updateEmail(
+            @PathVariable Byte id,
+            @RequestBody Map<String, String> body) {
+
+        return ResponseEntity.ok(
+                staffService.updateEmail(id, body.get("email"))
+        );
+    }
+
+    @PatchMapping("/{id}/store")
+    public ResponseEntity<StaffResponseDTO> updateStore(
+            @PathVariable Byte id,
+            @RequestBody Map<String, Object> body) {
+
+        Byte storeId = Byte.valueOf(body.get("storeId").toString());
+
+        return ResponseEntity.ok(
+                staffService.updateStore(id, storeId)
+        );
+    }
+
+    @PatchMapping("/{id}/phone")
+    public ResponseEntity<StaffResponseDTO> updatePhone(
+            @PathVariable Byte id,
+            @RequestBody Map<String, String> body) {
+
+        return ResponseEntity.ok(
+                staffService.updatePhone(id, body.get("phone"))
+        );
     }
 
     @PatchMapping("/{id}/deactivate")
@@ -145,4 +174,6 @@ public class StaffController {
         staffService.activateStaff(id);
         return ResponseEntity.ok("Staff activated successfully");
     }
+
+
 }

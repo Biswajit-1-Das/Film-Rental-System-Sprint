@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins="http://10.191.27.14:9090")
 @RequestMapping("/api/film")
 @RequiredArgsConstructor
 public class FilmController {
