@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +33,7 @@ public class Actor {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @CreationTimestamp
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 
