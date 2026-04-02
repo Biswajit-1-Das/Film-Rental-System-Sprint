@@ -53,7 +53,7 @@ public class LanguageController {
         return ResponseEntity.ok(languageService.saveLanguage(language));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<LanguageDTO> updateLanguage(@PathVariable Byte id,
                                                       @RequestBody Language language) {
         Language existing = languageService.getEntityById(id);

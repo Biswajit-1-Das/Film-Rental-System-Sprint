@@ -17,8 +17,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	
-    // 🔥 The Aggressive 404 Interceptor: Catches common Spring Data "Missing Data" crashes
+
     @ExceptionHandler({
         NoSuchElementException.class, 
         EntityNotFoundException.class, 
@@ -33,19 +32,14 @@ public class GlobalExceptionHandler {
                                  req.getRequestURI()));
     }
 
-    // 🔥 THE HACK (Option 2): Intercepts generic RuntimeExceptions thrown by your Services
- // 🔥 THE ULTIMATE HACK: Upgraded to Exception.class to catch EVERYTHING
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAllExceptions(Exception ex, HttpServletRequest req) {
         String message = ex.getMessage() != null ? ex.getMessage() : ex.toString();
-        
-        // If the service threw a generic error but the message implies data is missing
+
         if (message.toLowerCase().contains("not found") || message.toLowerCase().contains("no value present")) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ApiError(HttpStatus.NOT_FOUND.value(), message, req.getRequestURI()));
         }
-        
-        // If it's a real crash, return it cleanly so the frontend can display it
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiError(HttpStatus.INTERNAL_SERVER_ERROR.value(), message, req.getRequestURI()));
     }

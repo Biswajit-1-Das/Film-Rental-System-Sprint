@@ -33,10 +33,7 @@ public class LanguageService {
     }
 
     public HashSet<LanguageDTO> getAllLanguages() {
-//        return languageRepository.findAll()
-//                .stream()
-//                .map(this::toDTO)
-//                .collect(Collectors.toList());
+
         List<Language> lang = languageRepository.findAll();
         HashSet<LanguageDTO> language = new HashSet<>();
         for(Language l : lang)
