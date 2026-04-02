@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins="http://10.191.27.14:9090")
+@CrossOrigin(origins = "http://10.191.27.14:9090")
 @RequestMapping("/api/inventory")
 @RequiredArgsConstructor
 public class InventoryController {
@@ -22,26 +22,9 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.saveInventory(inventory));
     }
 
-    @GetMapping("/films")
-    public ResponseEntity<List<InventoryResponseDTO>> allInventoryFilms() {
+    @GetMapping
+    public ResponseEntity<List<InventoryResponseDTO>> getAll() {
         return ResponseEntity.ok(inventoryService.getAllInventory());
-    }
-
-    @GetMapping("/store/{id}")
-    public ResponseEntity<List<InventoryResponseDTO>> byStore(@PathVariable Byte id) {
-        return ResponseEntity.ok(inventoryService.getInventoryByStore(id));
-    }
-
-    @GetMapping("/film/{id}")
-    public ResponseEntity<List<InventoryResponseDTO>> byFilm(@PathVariable Short id) {
-        return ResponseEntity.ok(inventoryService.getInventoryByFilm(id));
-    }
-
-    @GetMapping("/film/{filmId}/store/{storeId}")
-    public ResponseEntity<List<InventoryResponseDTO>> byFilmAndStore(
-            @PathVariable Short filmId,
-            @PathVariable Byte storeId) {
-        return ResponseEntity.ok(inventoryService.getInventoryByFilmAndStore(filmId, storeId));
     }
 
     @GetMapping("/{id}")
@@ -49,14 +32,21 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.getInventoryById(id));
     }
 
-    @GetMapping
-    public ResponseEntity<List<InventoryResponseDTO>> getAll() {
-        return ResponseEntity.ok(inventoryService.getAllInventory());
+    @GetMapping("/store/{id}")
+    public ResponseEntity<List<InventoryResponseDTO>> getByStore(@PathVariable Byte id) {
+        return ResponseEntity.ok(inventoryService.getInventoryByStore(id));
     }
 
-    @PostMapping
-    public ResponseEntity<InventoryResponseDTO> createLegacy(@RequestBody Inventory inventory) {
-        return ResponseEntity.ok(inventoryService.saveInventory(inventory));
+    @GetMapping("/film/{id}")
+    public ResponseEntity<List<InventoryResponseDTO>> getByFilm(@PathVariable Short id) {
+        return ResponseEntity.ok(inventoryService.getInventoryByFilm(id));
+    }
+
+    @GetMapping("/film/{filmId}/store/{storeId}")
+    public ResponseEntity<List<InventoryResponseDTO>> getByFilmAndStore(
+            @PathVariable Short filmId,
+            @PathVariable Byte storeId) {
+        return ResponseEntity.ok(inventoryService.getInventoryByFilmAndStore(filmId, storeId));
     }
 
     @DeleteMapping("/{id}")
