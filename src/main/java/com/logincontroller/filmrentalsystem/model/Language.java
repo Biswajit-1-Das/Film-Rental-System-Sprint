@@ -41,24 +41,4 @@ public class Language {
     private Set<Film> originalLanguageFilms = new HashSet<>();
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Language)) return false;
-        Language language = (Language) o;
-        return languageId != null && languageId.equals(language.languageId);
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "Language{" +
-                "languageId=" + languageId +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }
