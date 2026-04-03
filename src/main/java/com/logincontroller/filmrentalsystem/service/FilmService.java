@@ -226,9 +226,6 @@ FilmService {
 
     @Transactional(readOnly = true)
     public List<FilmResponseDTO> getFilmsForActor(Short actorId) {
-//        return filmActorRepository.findByActor_ActorId(actorId).stream()
-//                .map(fa -> toResponseDTO(fa.getFilm()))
-//                .collect(Collectors.toList());
         List<FilmResponseDTO> res = new ArrayList<>();
         List<FilmActor> ar = filmActorRepository.findByActor_ActorId(actorId);
         for(FilmActor f : ar)

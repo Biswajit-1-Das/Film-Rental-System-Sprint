@@ -18,7 +18,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	
-    // 🔥 The Aggressive 404 Interceptor: Catches common Spring Data "Missing Data" crashes
+
     @ExceptionHandler({
         NoSuchElementException.class, 
         EntityNotFoundException.class, 
@@ -33,8 +33,7 @@ public class GlobalExceptionHandler {
                                  req.getRequestURI()));
     }
 
-    // 🔥 THE HACK (Option 2): Intercepts generic RuntimeExceptions thrown by your Services
- // 🔥 THE ULTIMATE HACK: Upgraded to Exception.class to catch EVERYTHING
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleAllExceptions(Exception ex, HttpServletRequest req) {
         String message = ex.getMessage() != null ? ex.getMessage() : ex.toString();
@@ -52,12 +51,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
-        String msg = ex.getBindingResult().getFieldErrors().stream()
-                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
-                .findFirst()
-                .orElse("Validation failed");
+//        String msg = ex.getBindingResult().getFieldErrors().stream()
+//                .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+//                .findFirst()
+//                .orElse("Validation failed");
         return ResponseEntity.badRequest()
-                .body(new ApiError(HttpStatus.BAD_REQUEST.value(), msg, req.getRequestURI()));
+                .body(new ApiError(HttpStatus.BAD_REQUEST.value(), ex.getMessage(), req.getRequestURI()));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
