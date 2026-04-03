@@ -137,4 +137,13 @@ public class ActorService {
         }
         return out;
     }
+
+    @Transactional(readOnly = true)
+    public List<ActorResponseDTO> getActorsByFirstNamePrefix(String prefix) {
+        return actorRepository.findByFirstNameStartingWithIgnoreCase(prefix)
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
 }
