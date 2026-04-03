@@ -1,6 +1,7 @@
 package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.CityDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.City;
 import com.logincontroller.filmrentalsystem.repository.CityRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class CityService {
 
     public City getEntityById(Short id) {
         return cityRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("City not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("City not found with id: " + id));
     }
 
     public List<CityDTO> getAllCities() {
@@ -62,7 +63,7 @@ public class CityService {
 
     public CityDTO getCityByCityName(String cityName) {
         City city = cityRepository.findByCity(cityName)
-                .orElseThrow(() -> new RuntimeException("City not found: " + cityName));
+                .orElseThrow(() -> new ResourceNotFoundException("City not found: " + cityName));
         return toDTO(city);
     }
 

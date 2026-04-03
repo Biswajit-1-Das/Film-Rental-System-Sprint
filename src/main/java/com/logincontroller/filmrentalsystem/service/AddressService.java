@@ -1,6 +1,7 @@
 package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.AddressDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.Address;
 import com.logincontroller.filmrentalsystem.repository.AddressRepository;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,7 @@ public class AddressService {
 
     public Address getEntityById(Short id) {
         return addressRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found with id: " + id));
     }
 
     public List<AddressDTO> getAllAddresses() {

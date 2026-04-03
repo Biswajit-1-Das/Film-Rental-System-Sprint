@@ -60,9 +60,16 @@ public class LanguageService {
 
     @Transactional(readOnly = true)
     public LanguageDTO getLanguageWithFilms(Byte id) {
+<<<<<<< Updated upstream
         Optional<Language> language = languageRepository.findByIdWithFilms(id);
         LanguageDTO dto = toDTO(language.orElse(null));
         if (language.get().getFilms() != null) {
+=======
+        Language language = languageRepository.findByIdWithFilms(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Language not found with id: " + id));
+        LanguageDTO dto = toDTO(language);
+        if (language.getFilms() != null) {
+>>>>>>> Stashed changes
             dto.setFilmTitles(
                     language.get().getFilms().stream()
                             .map(Film::getTitle)

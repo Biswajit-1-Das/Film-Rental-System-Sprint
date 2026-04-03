@@ -1,6 +1,7 @@
 package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.CustomerResponseDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.Address;
 import com.logincontroller.filmrentalsystem.model.Customer;
 import com.logincontroller.filmrentalsystem.model.Store;
@@ -55,7 +56,7 @@ public class CustomerService {
 
     public Customer getEntityById(Short id) {
         return customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Customer not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with id: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -136,7 +137,7 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public CustomerResponseDTO getCustomerByEmail(String email) {
         Customer customer = customerRepository.findByEmailIgnoreCase(email)
-                .orElseThrow(() -> new RuntimeException("Customer not found with email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found with email: " + email));
 
         return toResponseDTO(customer);
     }
@@ -177,7 +178,7 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public CustomerResponseDTO getCustomerByIdAndAddressId(Short customerId, Short addressId) {
         Customer customer = customerRepository.findByCustomerIdAndAddressAddressId(customerId, addressId)
-                .orElseThrow(() -> new RuntimeException(
+                .orElseThrow(() -> new ResourceNotFoundException(
                         "Customer not found for id " + customerId + " and address " + addressId));
 
         return toResponseDTO(customer);
@@ -272,7 +273,7 @@ public class CustomerService {
     public CustomerResponseDTO updateStore(Short id, Byte storeId) {
         Customer c = getEntityById(id);
         Store store = storeRepository.findById(storeId)
-                .orElseThrow(() -> new RuntimeException("Store not found: " + storeId));
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found: " + storeId));
         c.setStore(store);
         return toResponseDTO(customerRepository.save(c));
     }

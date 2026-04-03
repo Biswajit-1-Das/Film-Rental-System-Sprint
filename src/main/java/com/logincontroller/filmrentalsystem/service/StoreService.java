@@ -3,6 +3,7 @@ package com.logincontroller.filmrentalsystem.service;
 import com.logincontroller.filmrentalsystem.dto.CustomerResponseDTO;
 import com.logincontroller.filmrentalsystem.dto.StaffResponseDTO;
 import com.logincontroller.filmrentalsystem.dto.StoreResponseDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.Address;
 import com.logincontroller.filmrentalsystem.model.Customer;
 import com.logincontroller.filmrentalsystem.model.Staff;
@@ -90,7 +91,7 @@ public class StoreService {
 
     public Store getEntityById(Byte id) {
         return storeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Store not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Store not found with id: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -179,7 +180,7 @@ public class StoreService {
     public StoreResponseDTO linkStoreAddress(Byte storeId, Short addressId) {
         Store store = getEntityById(storeId);
         Address address = addressRepository.findById(addressId)
-                .orElseThrow(() -> new RuntimeException("Address not found: " + addressId));
+                .orElseThrow(() -> new ResourceNotFoundException("Address not found: " + addressId));
 
         store.setAddress(address);
         return toResponseDTO(storeRepository.save(store));
@@ -200,7 +201,7 @@ public class StoreService {
     public StoreResponseDTO setStoreManager(Byte storeId, Byte managerStaffId) {
         Store store = getEntityById(storeId);
         Staff manager = staffRepository.findById(managerStaffId)
-                .orElseThrow(() -> new RuntimeException("Staff not found: " + managerStaffId));
+                .orElseThrow(() -> new ResourceNotFoundException("Staff not found: " + managerStaffId));
 
         store.setManagerStaff(manager);
         return toResponseDTO(storeRepository.save(store));

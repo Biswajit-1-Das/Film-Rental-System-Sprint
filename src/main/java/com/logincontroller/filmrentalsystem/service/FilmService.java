@@ -1,6 +1,7 @@
 package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.*;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.*;
 import com.logincontroller.filmrentalsystem.repository.*;
 import com.logincontroller.filmrentalsystem.util.FilmRatingUtil;
@@ -66,7 +67,7 @@ FilmService {
 
     public Film getEntityById(Short id) {
         return filmRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Film not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Film not found with id: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -241,7 +242,7 @@ FilmService {
     @Transactional(readOnly = true)
     public Film_TextResponseDTO getFilmText(Short filmId) {
         Film_Text ft = filmTextRepository.findById(filmId)
-                .orElseThrow(() -> new RuntimeException("film_text not found for film id: " + filmId));
+                .orElseThrow(() -> new ResourceNotFoundException("film_text not found for film id: " + filmId));
         Film_TextResponseDTO d = new Film_TextResponseDTO();
         d.setFilmId(ft.getFilmId());
         d.setTitle(ft.getTitle());
@@ -297,7 +298,7 @@ FilmService {
     public FilmResponseDTO updateLanguage(Short id, Byte languageId) {
         Film f = getEntityById(id);
         Language lang = languageRepository.findById(languageId)
-                .orElseThrow(() -> new RuntimeException("Language not found: " + languageId));
+                .orElseThrow(() -> new ResourceNotFoundException("Language not found: " + languageId));
         f.setLanguage(lang);
         return toResponseDTO(filmRepository.save(f));
     }
@@ -306,7 +307,7 @@ FilmService {
     public FilmResponseDTO updateCategory(Short filmId, Byte categoryId) {
         Film film = getEntityById(filmId);
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found: " + categoryId));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + categoryId));
         filmCategoryRepository.deleteByFilm_FilmId(filmId);
         FilmCategory fc = new FilmCategory();
         FilmCategoryId pk = new FilmCategoryId(film.getFilmId(), category.getCategoryId());

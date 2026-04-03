@@ -2,6 +2,7 @@ package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.FilmResponseDTO;
 import com.logincontroller.filmrentalsystem.dto.RentalResponseDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.*;
 import com.logincontroller.filmrentalsystem.repository.CustomerRepository;
 import com.logincontroller.filmrentalsystem.repository.InventoryRepository;
@@ -55,13 +56,13 @@ public class RentalService {
                                           Integer inventoryId, Rental rental) {
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         Staff staff = staffRepository.findById(staffId)
-                .orElseThrow(() -> new RuntimeException("Staff not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Staff not found"));
 
         Inventory inventory = inventoryRepository.findById(inventoryId)
-                .orElseThrow(() -> new RuntimeException("Inventory not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
 
         rental.setCustomer(customer);
         rental.setStaff(staff);
@@ -80,7 +81,7 @@ public class RentalService {
 
     public Rental getEntityById(Integer id) {
         return rentalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rental not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Rental not found with id: " + id));
     }
 
     @Transactional(readOnly = true)
@@ -166,16 +167,16 @@ public class RentalService {
                                             Short customerId, Byte staffId, Integer inventoryId) {
 
         Rental existing = rentalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         Staff staff = staffRepository.findById(staffId)
-                .orElseThrow(() -> new RuntimeException("Staff not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Staff not found"));
 
         Inventory inventory = inventoryRepository.findById(inventoryId)
-                .orElseThrow(() -> new RuntimeException("Inventory not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
 
         existing.setCustomer(customer);
         existing.setStaff(staff);

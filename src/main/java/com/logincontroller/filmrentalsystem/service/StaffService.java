@@ -2,6 +2,7 @@ package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.AddressResponseDTO;
 import com.logincontroller.filmrentalsystem.dto.StaffResponseDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.Address;
 import com.logincontroller.filmrentalsystem.model.Staff;
 import com.logincontroller.filmrentalsystem.model.Store;
@@ -299,10 +300,10 @@ public class StaffService {
     public Staff login(String username, String password) {
         Staff staff = staffRepository.findByUsername(username);
         if (staff == null) {
-            throw new RuntimeException("User not found ");
+            throw new ResourceNotFoundException("User not found ");
         }
         if (!staff.getPassword().equals(password)) {
-            throw new RuntimeException("Invalid password");
+            throw new ResourceNotFoundException("Invalid password");
         }
         return staff;
     }

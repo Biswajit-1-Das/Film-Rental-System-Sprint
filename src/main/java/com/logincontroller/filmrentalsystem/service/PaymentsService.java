@@ -3,6 +3,7 @@ package com.logincontroller.filmrentalsystem.service;
 import com.logincontroller.filmrentalsystem.dto.DateRevenueDTO;
 import com.logincontroller.filmrentalsystem.dto.FilmRevenueDTO;
 import com.logincontroller.filmrentalsystem.dto.PaymentsResponseDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.*;
 import com.logincontroller.filmrentalsystem.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -49,13 +50,13 @@ public class PaymentsService {
                                              Integer rentalId, Payments payment) {
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         Staff staff = staffRepository.findById(staffId)
-                .orElseThrow(() -> new RuntimeException("Staff not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Staff not found"));
 
         Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
         payment.setCustomer(customer);
         payment.setStaff(staff);
@@ -70,7 +71,7 @@ public class PaymentsService {
     @Transactional(readOnly = true)
     public PaymentsResponseDTO getPaymentById(Short id) {
         return toResponseDTO(paymentsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Payment not found with id: " + id)));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found with id: " + id)));
     }
 
     @Transactional(readOnly = true)
@@ -128,16 +129,16 @@ public class PaymentsService {
                                              Short customerId, Byte staffId, Integer rentalId) {
 
         Payments existing = paymentsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Payment not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment not found"));
 
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         Staff staff = staffRepository.findById(staffId)
-                .orElseThrow(() -> new RuntimeException("Staff not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Staff not found"));
 
         Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Rental not found"));
 
         existing.setAmount(updatedPayment.getAmount());
         existing.setCustomer(customer);

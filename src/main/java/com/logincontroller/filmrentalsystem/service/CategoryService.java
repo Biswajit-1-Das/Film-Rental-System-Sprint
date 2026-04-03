@@ -1,6 +1,7 @@
 package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.CategoryDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.Category;
 import com.logincontroller.filmrentalsystem.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class CategoryService {
 
     public Category getEntityById(Byte id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + id));
     }
 
     public List<CategoryDTO> getAllCategories() {
@@ -55,7 +56,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryDTO getCategoryByName(String name) {
         Category category = categoryRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new RuntimeException("Category not found: " + name));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found: " + name));
         return toDTO(category);
     }
 

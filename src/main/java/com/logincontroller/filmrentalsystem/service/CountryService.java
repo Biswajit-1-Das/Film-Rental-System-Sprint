@@ -1,6 +1,7 @@
 package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.CountryDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.Country;
 import com.logincontroller.filmrentalsystem.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class CountryService {
 
     public Country getEntityById(Short id) {
         return countryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Country not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Country not found with id: " + id));
     }
 
     public List<CountryDTO> getAllCountries() {
@@ -42,7 +43,7 @@ public class CountryService {
 
     public CountryDTO getCountryByName(String name) {
         Country country = countryRepository.findByCountryIgnoreCase(name)
-                .orElseThrow(() -> new RuntimeException("Country not found: " + name));
+                .orElseThrow(() -> new ResourceNotFoundException("Country not found: " + name));
         return toDTO(country);
     }
 

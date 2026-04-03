@@ -1,6 +1,7 @@
 package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.InventoryResponseDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.Film;
 import com.logincontroller.filmrentalsystem.model.Inventory;
 import com.logincontroller.filmrentalsystem.repository.FilmRepository;
@@ -55,7 +56,7 @@ public class InventoryService {
     @Transactional(readOnly = true)
     public InventoryResponseDTO getInventoryById(Integer id) {
         Inventory inv = inventoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Inventory not found: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Inventory not found: " + id));
         return toResponseDTO(inv);
     }
 

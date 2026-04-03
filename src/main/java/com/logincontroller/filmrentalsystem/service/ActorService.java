@@ -2,6 +2,7 @@ package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.ActorResponseDTO;
 import com.logincontroller.filmrentalsystem.dto.FilmResponseDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.Actor;
 import com.logincontroller.filmrentalsystem.repository.ActorRepository;
 import com.logincontroller.filmrentalsystem.repository.FilmActorRepository;
@@ -40,7 +41,7 @@ public class ActorService {
 
     public Actor getEntityById(Short id) {
         return actorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Actor not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Actor not found with id: " + id));
     }
 
     @Transactional(readOnly = true)
