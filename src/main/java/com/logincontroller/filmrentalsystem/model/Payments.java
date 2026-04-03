@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor // Required by JPA
+@NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @Table(name = "payment")

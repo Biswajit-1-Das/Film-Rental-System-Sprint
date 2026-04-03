@@ -10,4 +10,6 @@ public interface ActorRepository extends JpaRepository<Actor, Short> {
 
     List<Actor> findByFirstNameContainingIgnoreCase(String firstName);
     List<Actor> findByLastNameContainingIgnoreCase(String lastName);
+    List<Actor> findByFirstNameStartingWithIgnoreCase(String prefix);
+
 }

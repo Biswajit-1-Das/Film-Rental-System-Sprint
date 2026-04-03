@@ -1,6 +1,7 @@
 package com.logincontroller.filmrentalsystem.service;
 
 import com.logincontroller.filmrentalsystem.dto.LanguageDTO;
+import com.logincontroller.filmrentalsystem.exception.ResourceNotFoundException;
 import com.logincontroller.filmrentalsystem.model.Film;
 import com.logincontroller.filmrentalsystem.model.Language;
 import com.logincontroller.filmrentalsystem.repository.LanguageRepository;
@@ -8,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +30,7 @@ public class LanguageService {
 
     public Language getEntityById(Byte id) {
         return languageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Language not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Language not found with id: " + id));
     }
 
     public HashSet<LanguageDTO> getAllLanguages() {
@@ -49,7 +50,7 @@ public class LanguageService {
 
     public LanguageDTO getLanguageByName(String name) {
         Language language = languageRepository.findByNameIgnoreCase(name)
-                .orElseThrow(() -> new RuntimeException("Language not found: " + name));
+                .orElseThrow(() -> new ResourceNotFoundException("Language not found: " + name));
         return toDTO(language);
     }
 
@@ -59,12 +60,11 @@ public class LanguageService {
 
     @Transactional(readOnly = true)
     public LanguageDTO getLanguageWithFilms(Byte id) {
-        Language language = languageRepository.findByIdWithFilms(id)
-                .orElseThrow(() -> new RuntimeException("Language not found with id: " + id));
-        LanguageDTO dto = toDTO(language);
-        if (language.getFilms() != null) {
+        Optional<Language> language = languageRepository.findByIdWithFilms(id);
+        LanguageDTO dto = toDTO(language.orElse(null));
+        if (language.get().getFilms() != null) {
             dto.setFilmTitles(
-                    language.getFilms().stream()
+                    language.get().getFilms().stream()
                             .map(Film::getTitle)
                             .collect(Collectors.toList())
             );

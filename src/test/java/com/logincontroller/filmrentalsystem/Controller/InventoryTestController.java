@@ -8,6 +8,7 @@ import com.logincontroller.filmrentalsystem.dto.InventoryResponseDTO;
 import com.logincontroller.filmrentalsystem.model.Inventory;
 import com.logincontroller.filmrentalsystem.service.InventoryService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;

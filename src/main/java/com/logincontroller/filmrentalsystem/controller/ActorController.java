@@ -45,12 +45,7 @@ public class ActorController {
         return ResponseEntity.ok(actorService.updateLastName(id, lastName));
     }
 
-//    @PutMapping("/update/firstname/{id}")
-//    public ResponseEntity<ActorResponseDTO> updateFirstName(
-//            @PathVariable Short id,
-//            @RequestParam String firstName) {
-//        return ResponseEntity.ok(actorService.updateFirstName(id, firstName));
-//    }
+
 
     @GetMapping("/{id}/films")
     public ResponseEntity<List<FilmResponseDTO>> filmsForActor(@PathVariable Short id) {
@@ -71,4 +66,10 @@ public class ActorController {
     public ResponseEntity<ActorResponseDTO> getActorById(@PathVariable Short id) {
         return ResponseEntity.ok(actorService.getActorById(id));
     }
+
+    @GetMapping("/startswith/{prefix}")
+    public ResponseEntity<List<ActorResponseDTO>> getActorsByPrefix(@PathVariable String prefix) {
+        return ResponseEntity.ok(actorService.getActorsByFirstNamePrefix(prefix));
+    }
+
 }

@@ -71,6 +71,7 @@ public class ActorService {
     }
 
     public ActorResponseDTO getActorById(Short id) {
+
         return toResponseDTO(getEntityById(id));
     }
 
@@ -125,12 +126,7 @@ public class ActorService {
         return toResponseDTO(actorRepository.save(existing));
     }
 
-//    @Transactional
-//    public ActorResponseDTO updateFirstName(Short id, String firstName) {
-//        Actor existing = getEntityById(id);
-//        existing.setFirstName(firstName);
-//        return toResponseDTO(actorRepository.save(existing));
-//    }
+
 
     @Transactional(readOnly = true)
     public List<ActorResponseDTO> getTopTenActorsByFilmCount() {
@@ -141,4 +137,13 @@ public class ActorService {
         }
         return out;
     }
+
+    @Transactional(readOnly = true)
+    public List<ActorResponseDTO> getActorsByFirstNamePrefix(String prefix) {
+        return actorRepository.findByFirstNameStartingWithIgnoreCase(prefix)
+                .stream()
+                .map(this::toResponseDTO)
+                .collect(Collectors.toList());
+    }
+
 }

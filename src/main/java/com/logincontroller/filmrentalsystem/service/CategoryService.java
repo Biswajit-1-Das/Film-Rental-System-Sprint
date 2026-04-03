@@ -59,6 +59,17 @@ public class CategoryService {
         return toDTO(category);
     }
 
+    @Transactional(readOnly = true)
+    public List<CategoryDTO> getCategoriesByFilmTitle(String filmTitle) {
+        List<Category> categories = categoryRepository.findByFilmCategories_Film_TitleIgnoreCase(filmTitle);
+        if (categories.isEmpty()) {
+            throw new RuntimeException("No categories found for film: " + filmTitle);
+        }
+        return categories.stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+    }
+
     public CategoryDTO saveCategory(Category category) {
         return toDTO(categoryRepository.save(category));
     }

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class  FilmRentalSystemApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(FilmRentalSystemApplication.class, args);
+        SpringApplication.run (FilmRentalSystemApplication.class, args);
     }
 
 }

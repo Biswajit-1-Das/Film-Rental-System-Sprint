@@ -13,8 +13,7 @@ import java.util.List;
 @CrossOrigin(origins="http://10.191.27.14:9090")
 @RequestMapping("/api/category")
 @RequiredArgsConstructor
-public class
-CategoryController {
+public class CategoryController {
 
     private final CategoryService categoryService;
 
@@ -23,15 +22,23 @@ CategoryController {
         return ResponseEntity.ok(categoryService.getAllCategories());
     }
 
-    @GetMapping("/name/{name}")
+    @GetMapping("/name/search")
     public ResponseEntity<CategoryDTO> getCategoryByName(@RequestParam String name) {
         return ResponseEntity.ok(categoryService.getCategoryByName(name));
     }
+
+
+    @GetMapping("/by-film")
+    public ResponseEntity<List<CategoryDTO>> getCategoryFromFilmName(@RequestParam String filmTitle){
+        return ResponseEntity.ok(categoryService.getCategoriesByFilmTitle(filmTitle));
+    }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDTO> getCategoryById(@PathVariable Byte id) {
         return ResponseEntity.ok(categoryService.getCategoryById(id));
     }
+
 
     @PostMapping
     public ResponseEntity<CategoryDTO> createCategory(@RequestBody Category category) {
