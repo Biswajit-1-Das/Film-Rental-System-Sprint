@@ -10,12 +10,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class FilmService {
+public class
+FilmService {
 
     private final FilmRepository filmRepository;
     private final FilmActorRepository filmActorRepository;
@@ -224,9 +226,19 @@ public class FilmService {
 
     @Transactional(readOnly = true)
     public List<FilmResponseDTO> getFilmsForActor(Short actorId) {
-        return filmActorRepository.findByActor_ActorId(actorId).stream()
-                .map(fa -> toResponseDTO(fa.getFilm()))
-                .collect(Collectors.toList());
+//        return filmActorRepository.findByActor_ActorId(actorId).stream()
+//                .map(fa -> toResponseDTO(fa.getFilm()))
+//                .collect(Collectors.toList());
+        List<FilmResponseDTO> res = new ArrayList<>();
+        List<FilmActor> ar = filmActorRepository.findByActor_ActorId(actorId);
+        for(FilmActor f : ar)
+        {
+            if(f.getId().equals(actorId))
+            {
+                res.add(toResponseDTO(f.getFilm()));
+            }
+        }
+        return res;
     }
 
     @Transactional(readOnly = true)

@@ -159,9 +159,6 @@ public class PaymentsService {
         if (o instanceof LocalDate) {
             return (LocalDate) o;
         }
-        if (o instanceof java.util.Date) {
-            return ((java.util.Date) o).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        }
         throw new IllegalArgumentException("Unsupported date type: " + o.getClass());
     }
 

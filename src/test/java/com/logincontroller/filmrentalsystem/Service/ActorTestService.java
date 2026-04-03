@@ -42,15 +42,15 @@ public class ActorTestService {
     public void getActorById() {
         Actor actor = Actor.builder()
                 .actorId((short) 1)
-                .firstName("Rendi")
-                .lastName("ChutChut")
+                .firstName("Arun")
+                .lastName("Kar")
                 .build();
 
         when(actorRepository.findById((short) 1)).thenReturn(Optional.of(actor));
 
         ActorResponseDTO result = actorService.getActorById((short) 1);
 
-        assertEquals("Rendi", result.getFirstName());
+        assertEquals("Arun", result.getFirstName());
     }
 
     // ✅ 2. getAllActors
@@ -132,13 +132,13 @@ public class ActorTestService {
 
     @Test
     public void saveActor_savesAndReturnsDto() {
-        Actor actor = Actor.builder().actorId((short) 1).firstName("Rendi").lastName("ChutChut").build();
+        Actor actor = Actor.builder().actorId((short) 1).firstName("Arun").lastName("Ghosh").build();
         when(actorRepository.save(actor)).thenReturn(actor);
 
         ActorResponseDTO result = actorService.saveActor(actor);
 
-        assertEquals("Rendi", result.getFirstName());
-        assertEquals("ChutChut", result.getLastName());
+        assertEquals("Arun", result.getFirstName());
+        assertEquals("Ghosh", result.getLastName());
         verify(actorRepository).save(actor);
     }
 

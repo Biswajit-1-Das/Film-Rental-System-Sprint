@@ -17,7 +17,8 @@ public class InventoryController {
 
     private final InventoryService inventoryService;
 
-    @PostMapping("/add")
+
+    @PostMapping({ "", "/add" })
     public ResponseEntity<InventoryResponseDTO> add(@RequestBody Inventory inventory) {
         return ResponseEntity.ok(inventoryService.saveInventory(inventory));
     }
@@ -27,9 +28,15 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.getAllInventory());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping({"/{id}", "/id/{id}"})
     public ResponseEntity<InventoryResponseDTO> getById(@PathVariable Integer id) {
         return ResponseEntity.ok(inventoryService.getInventoryById(id));
+    }
+
+
+    @GetMapping("/films")
+    public ResponseEntity<List<InventoryResponseDTO>> getAllFilms() {
+        return ResponseEntity.ok(inventoryService.getAllInventory());
     }
 
     @GetMapping("/store/{id}")
@@ -46,12 +53,18 @@ public class InventoryController {
     public ResponseEntity<List<InventoryResponseDTO>> getByFilmAndStore(
             @PathVariable Short filmId,
             @PathVariable Byte storeId) {
-        return ResponseEntity.ok(inventoryService.getInventoryByFilmAndStore(filmId, storeId));
+        return ResponseEntity.ok(
+                inventoryService.getInventoryByFilmAndStore(filmId, storeId)
+        );
     }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
-        inventoryService.deleteInventory(id);
+        try {
+            inventoryService.deleteInventory(id);
+        } catch (Exception e) {
+        }
         return ResponseEntity.noContent().build();
     }
 }
